@@ -1,0 +1,317 @@
+<mxfile host="Electron" modified="2025-04-11T19:15:13.792Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="wushxFb19LY2rGz3ERc5" version="22.1.2" type="device">
+  <diagram name="Page-1" id="7ynxl21J-mi2Gz97TGtv">
+    <mxGraphModel dx="3434" dy="2225" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8wdyk8E4qUwrByH0UspS-1" value="SchedulerService" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-670" y="137" width="310" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-7" value="- _ideaRepository: IDeaRepository" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="26" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-6" value="- _cacheService: ICacheService" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="52" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-9" value="-_messageBroker: IMessageBroker" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="78" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-8" value="- _notficationService: INotificationService" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="104" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-10" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="130" width="310" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-11" value="+ ScanForExperiedIdeas(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-1">
+          <mxGeometry y="138" width="310" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-5" value="&lt;b style=&quot;text-decoration-line: underline;&quot;&gt;Schedular Service UML Design&lt;/b&gt;&lt;br&gt;&lt;br&gt;Main responsibility:&lt;br&gt;1. Scan for expired Ideas&lt;br&gt;2. Dispatch event to message broker&lt;br&gt;3. Trigger notifications&lt;br&gt;4. Schedule for revision task." style="html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="-790" y="-600" width="300" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-12" target="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="874" y="130" />
+              <mxPoint x="874" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-12" value="ExpiredPoolsByTag" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="-160" width="390" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-13" value="- GroupPools: ConcurrentDictionary&amp;lt;KeyT, List&amp;lt;ExpiredIdea&amp;gt;&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-12">
+          <mxGeometry y="26" width="390" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-14" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-12">
+          <mxGeometry y="52" width="390" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-48" value="+ Get(SearchId: string): ICollection&amp;lt;ExpiredIdea&amp;gt;&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-12">
+          <mxGeometry y="60" width="390" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;endFill=0;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-16" target="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1235" y="70" />
+              <mxPoint x="874" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-16" value="ExpiredPoolsByType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1089" y="-160" width="381" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-17" value="- GroupPools: ConcurrentDictionary&amp;lt;KeyT, List&amp;lt;ExpiredIdea&amp;gt;T&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-16">
+          <mxGeometry y="26" width="381" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-18" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-16">
+          <mxGeometry y="52" width="381" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-49" value="+ Get(SearchId: string): ICollection&amp;lt;ExpiredIdea&amp;gt;&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-16">
+          <mxGeometry y="60" width="381" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-22" target="8wdyk8E4qUwrByH0UspS-27">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850" y="613" as="sourcePoint" />
+            <mxPoint x="760" y="410.0000000000002" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="690" y="629" />
+              <mxPoint x="690" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-33" value="Belong in" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="8wdyk8E4qUwrByH0UspS-31">
+          <mxGeometry x="0.6065" y="1" relative="1" as="geometry">
+            <mxPoint x="1" y="65" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-34" value="0 .. n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="8wdyk8E4qUwrByH0UspS-31">
+          <mxGeometry x="-0.9308" relative="1" as="geometry">
+            <mxPoint x="-5" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-21" target="8wdyk8E4qUwrByH0UspS-66">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1110" y="637" />
+              <mxPoint x="1110" y="637" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-21" value="&lt;b&gt;ExpiredIdea&amp;lt;T&amp;gt;&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="580" width="240" height="218" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-22" value="+ Detail: T" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="26" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-23" value="+ TargetPool:ExpiredPool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="52" width="240" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-25" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="80" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-87" value="- [delegate] unsubsribe(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="88" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-24" value="+ Complete(): Expired" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="114" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-73" value="+ ReSchedule(period: TimeSpan): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="140" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-72" value="- Fail(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="166" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-71" value="+ Pass(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-21">
+          <mxGeometry y="192" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-26" value="ExpiredPool" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="380" width="340" height="162" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-27" value="- _IdeaQueue: ConcurrentDictionary&amp;lt;string, ExpiredIdea &amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="26" width="340" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-65" value="+ CreateAt: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="50" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-104" value="+ LastAccess: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="76" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-28" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="102" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-29" value="+ Subscribe(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="110" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-30" value="+ Unsubscribe(Idea): ExpiredIdea" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry y="136" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-35" value="0 .. n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="700" y="610" as="geometry">
+            <mxPoint x="27" y="-202" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-36" target="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="70" />
+              <mxPoint x="874" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-36" value="ExpiredPoolsByCollection" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="-160" width="370" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-37" value="- GroupPools: ConcurrentDictionary&amp;lt;KeyT, List&amp;lt;ExpiredIdea&amp;gt;&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-36">
+          <mxGeometry y="26" width="370" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-38" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-36">
+          <mxGeometry y="52" width="370" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-47" value="+ Get(SearchId: string): ICollection&amp;lt;ExpiredIdea&amp;gt;&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-36">
+          <mxGeometry y="60" width="370" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=0;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-40" target="8wdyk8E4qUwrByH0UspS-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="895" y="270" />
+              <mxPoint x="895" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-78" value="1..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="8wdyk8E4qUwrByH0UspS-64">
+          <mxGeometry x="-0.7979" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-40" value="&lt;i&gt;GroupStrategy&amp;lt; KeyT&amp;gt;&lt;/i&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="150" width="387.5" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-41" value="- GroupPools: ConcurrentDictionary&amp;lt;KeyT, List&amp;lt;ExpiredIdea&amp;gt;&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="26" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-114" value="- GroupPoolCutOffs: ConcurrentDictionary&amp;lt;KeyT, List&amp;lt;Cursor End&amp;gt;&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="52" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-123" value="+ SortingPerference: ENUM(...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="78" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-95" value="+ EvictTime: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="104" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-96" value="+ TTL: TimeSpan" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="130" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-42" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="156" width="387.5" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-43" value="+ Get(SearchId: string): ICollection&amp;lt;ExpiredIdea&amp;gt;&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-40">
+          <mxGeometry y="164" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-66" value="&lt;b&gt;IEvaluate&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="580" width="220" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-67" value="+ Pass(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-66">
+          <mxGeometry y="26" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-68" value="- Fail(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-66">
+          <mxGeometry y="52" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-69" value="+ ReSchedule(period: TimeSpan): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-66">
+          <mxGeometry y="78" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-79" value="&lt;i&gt;GroupStrategyResolver&lt;/i&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="137" width="387.5" height="134" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-80" value="- AvailableGroup: ConcurrentBag&amp;lt;GroupStrategy&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-79">
+          <mxGeometry y="26" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-127" value="- ExistedIdea: ConcurrentDictionary&amp;lt;string, ExpiredIdea&amp;gt;:" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-79">
+          <mxGeometry y="52" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-81" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-79">
+          <mxGeometry y="78" width="387.5" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-92" value="+ AddGroup(key: ENUM()): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-79">
+          <mxGeometry y="86" width="387.5" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-82" value="+ AddGroup(key: ENUM(...), number: Idea): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-79">
+          <mxGeometry y="108" width="387.5" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-83" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=0;" edge="1" parent="1" source="8wdyk8E4qUwrByH0UspS-80" target="8wdyk8E4qUwrByH0UspS-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-84" value="ExpiredIdea" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="495" y="168" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-85" value="Resolver: Handling add group, register expired Idea" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="70" y="100" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-88" value="&lt;font color=&quot;#66b2ff&quot;&gt;unsubscribe remove this idea from all pool&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="510" y="674" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-89" value="&lt;font color=&quot;#99ccff&quot;&gt;AvailableGroup[0] = base group that key = 0 and list contain all expired Idea&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="80" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-91" value="&lt;font color=&quot;#99ccff&quot;&gt;The Group Strategy allow user fast and efficiently hover between different view&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="650" y="-230" width="440" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-97" value="&lt;font color=&quot;#99ccff&quot;&gt;1. When Max size reach, It will evict the Group with the closest Evict Time.&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="204" width="420" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-105" value="&lt;font color=&quot;#99ccff&quot;&gt;if after what have been load, there is&amp;nbsp; no more data, the cursor end will be null&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="230" width="440" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-106" value="&lt;font color=&quot;#99ccff&quot;&gt;Expriration Update Once perday&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-107" value="&lt;u style=&quot;font-weight: bold;&quot;&gt;User story:&lt;/u&gt;&lt;br&gt;1. Only&amp;nbsp;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-300" y="580" width="420" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-111" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="200" y="443" width="90" height="99" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-98" value="&lt;font color=&quot;#99ccff&quot;&gt;Idea that is immature (less than level 3) are store directly in the Expired db&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-111">
+          <mxGeometry width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-99" value="&lt;font color=&quot;#99ccff&quot;&gt;Expired idea is pull directly into the Expired db&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-111">
+          <mxGeometry y="26" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-100" value="&lt;font color=&quot;#99ccff&quot;&gt;Expired idea that is got its level downgrade to level 0, and too old get move to archive. user can chose include archive&amp;nbsp;&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-111">
+          <mxGeometry x="10" y="52" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-102" value="&lt;font color=&quot;#99ccff&quot;&gt;once all expired data is revised, user will be proompt to work on the archive data&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="8wdyk8E4qUwrByH0UspS-111">
+          <mxGeometry x="10" y="73" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-112" value="&lt;font color=&quot;#99ccff&quot;&gt;Only active use will have the this Revision service&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="298" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-116" value="&lt;font color=&quot;#99ccff&quot;&gt;Schedular Run once perday,&amp;nbsp;&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="320" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-117" value="&lt;font color=&quot;#99ccff&quot;&gt;AddGroup() : will load the&amp;nbsp; first N(max size) of the expired idea in expired-idea sql table, sorting base of preference&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="364" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-118" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font color=&quot;#66b2ff&quot;&gt;the one of three method will interface with the actual Idea in Sql DB, call unsubscribe as suit&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="495" y="704" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-119" value="&lt;font color=&quot;#66b2ff&quot;&gt;unsubscribe typically will ensure expiredIdea will be expired the following day&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="325" y="754" width="430" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-122" value="&lt;font color=&quot;#99ccff&quot;&gt;It add expired Idea in batch base off group definition, have cut off accordingly&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="340" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-124" value="&lt;font color=&quot;#99ccff&quot;&gt;subsequent call of AddGroup will either manually add number of idea or refresh it up to the nItem&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="390" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-125" value="&lt;font color=&quot;#66b2ff&quot;&gt;the unsubscribe also handle auto refresh the target Pool, if still have data left in sql table&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="265" y="780" width="490" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-126" value="&lt;font color=&quot;#99ccff&quot;&gt;Redis will help in term of cache 4x the amount of data, cursor, so it minimise the round tip to sql db&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="605" y="-260" width="550" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8wdyk8E4qUwrByH0UspS-128" value="&lt;font color=&quot;#99ccff&quot;&gt;All idea are create Once and store in ExistedIdea, all Group basically reference it in the collection (add it )&lt;/font&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="406" width="80" height="16" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

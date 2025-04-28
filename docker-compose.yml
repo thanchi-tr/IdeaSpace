@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  # PostgreSQL service
+  postgres:
+    image: postgres:latest
+    container_name: local-postgres
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=ideaspace
+    ports:
+      - "5432:5432"
+    networks:
+      - ideaspace_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+  # Redis service
+  redis:
+    image: redis:latest
+    container_name: local-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ideaspace_network
+    volumes:
+      - redis_data:/data
+
+  # RabbitMQ service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: local-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"       # AMQP protocol port (for application)
+      - "15672:15672"     # Management UI (for browser access)
+    networks:
+      - ideaspace_network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+        test: ["CMD", "rabbitmq-diagnostics", "ping"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+networks:
+  ideaspace_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local

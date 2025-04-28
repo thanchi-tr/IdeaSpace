@@ -1,0 +1,138 @@
+# ===============================
+# Solution-wide Gitignore for IdeaSpace Modular Monolith
+# ===============================
+
+# Build folders
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# User-specific files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vs/
+
+# Build output and logs
+*.log
+**/Logs/
+**/logs/
+
+# ASP.NET environment
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+/secrets.json
+appsettings.*.local.json
+
+# Docker
+docker-compose.override.yml
+**/Dockerfile.generated
+
+# Node and npm (if you later add frontend assets)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.pnpm-store/
+
+# Test results
+TestResults/
+tests/**/TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# DotCover
+.idea/dotCover/
+
+# Rider / JetBrains
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+
+# NCrunch
+.ncrunch*
+**/.ncrunch*
+
+# Resharper
+_ReSharper*/
+**/_ReSharper*/
+*.DotSettings.user
+
+# Temporary files
+~$*
+*.tmp
+*.temp
+*.bak
+*.cache
+*.swp
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Unix
+.Trashes
+*.pid
+
+# Tests output
+/tests/**/bin/
+/tests/**/obj/
+tests/**/TestResults/
+
+# Shared libraries build artifacts
+/src/Shared/**/bin/
+src/Shared/**/obj/
+
+# Ignore Docker container cache data
+docker-compose.override.yml
+docker-compose.*.yml
+
+# Module-specific build artifacts
+/src/Modules/**/bin/
+src/Modules/**/obj/
+src/Modules/**/publish/
+
+# Ignore potentially large EF migrations (optional)
+**/Migrations/
+
+# Rider / Resharper / DotSettings (optional but safe)
+.idea/
+*.DotSettings.user
+.idea/.idea.ICLSandbox/
+
+# Ignore environment-specific files
+.env
+.env.*
+
+# Ignore all .env files in all project folders
+/src/**/.env
+/src/**/.env.*
+/tests/**/.env
+/tests/**/.env.*
+
+# Ignore debug launch profiles
+**/Properties/launchSettings.json
+
+# Ignore global appsettings for local
+/src/**/appsettings.Local.json
+/src/**/appsettings.Development.json
+
+# Package manager files
+*.nupkg
+*.snupkg
+.nuget/
+packages/

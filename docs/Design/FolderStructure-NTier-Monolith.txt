@@ -1,0 +1,83 @@
+/src
+├── /Presentation
+│   ├── /Api
+│   │   ├── Controllers/
+│   │   │   ├── HealthCheckController.cs
+│   │   │   ├── RecoveryController.cs
+│   │   │   └── DataStatusController.cs
+│   │   ├── Program.cs
+│   │   └── Startup.cs
+│   └── /Worker
+│       ├── WorkerService.cs
+│       └── HostedServiceLifecycle.cs
+
+├── /Application
+│   ├── Interfaces/
+│   │   ├── Services/
+│   │   │   ├── IRecoverService.cs
+│   │   │   ├── IDetectDiscrepancy.cs
+│   │   │   ├── IDeltaLogPublisher.cs
+│   │   │   ├── ISystemRecoverPublisher.cs
+│   │   │   └── IAtomicRecoverPublisher.cs
+│   │   └── Lifecycle/
+│   │       ├── ILifecycle.cs
+│   │       └── IServiceThreadRunner.cs
+│   ├── Services/
+│   │   ├── RecoverService.cs
+│   │   ├── DetectDiscrepancyService.cs
+│   │   ├── DeltaLogPublisher.cs
+│   │   ├── SystemRecoverPublisher.cs
+│   │   └── AtomicRecoverPublisher.cs
+│   ├── Coordinators/
+│   │   ├── StartupCoordinator.cs
+│   │   └── ShutdownCoordinator.cs
+│   └── Common/
+│       ├── ServiceThreadRunner.cs
+│       ├── CancellationTokenHandler.cs
+│       ├── IClock.cs
+│       └── RateLimiter.cs
+
+├── /Domain
+│   ├── Models/
+│   │   ├── SystemData.cs
+│   │   ├── DeltaLogEvent.cs
+│   │   └── Snapshot.cs
+│   ├── Enums/
+│   │   ├── EventType.cs
+│   │   └── RecoveryMode.cs
+│   └── Exceptions/
+│       ├── ChecksumMismatchException.cs
+│       └── SequenceMismatchException.cs
+
+├── /Infrastructure
+│   ├── /Persistence
+│   │   ├── SnapshotRepository.cs
+│   │   ├── DeltaLogRepository.cs
+│   │   └── SqlDataStakeholder.cs
+│   ├── /Cache
+│   │   ├── RedisCache.cs
+│   │   └── PersistCacheStakeholder.cs
+│   ├── /Messaging
+│   │   ├── RabbitMqPublisher.cs
+│   │   ├── EventPublisher.cs
+│   │   └── GateControlPublisher.cs
+│   └── /Observability
+│       ├── Logging.cs
+│       ├── Telemetry.cs
+│       └── HealthCheck.cs
+
+├── /Tests
+│   ├── Application.Tests/
+│   │   ├── RecoverServiceTests.cs
+│   │   ├── DetectDiscrepancyTests.cs
+│   │   └── DeltaLogPublisherTests.cs
+│   ├── Domain.Tests/
+│   │   ├── SystemDataTests.cs
+│   │   └── DeltaLogEventTests.cs
+│   └── Infrastructure.Tests/
+│       ├── SnapshotRepositoryTests.cs
+│       └── RedisCacheTests.cs
+
+/appsettings.json
+/docker-compose.yml (optional)
+/README.md

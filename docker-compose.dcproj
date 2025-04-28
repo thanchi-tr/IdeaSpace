@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.Docker.Sdk">
+	<PropertyGroup>
+		<ProjectVersion>2.1</ProjectVersion>
+		<DockerComposeProjectPath>..\</DockerComposeProjectPath>
+		<DockerComposeServiceName>rabbitmq</DockerComposeServiceName>
+		<DockerComposeBaseFile>build\docker-compose.yml</DockerComposeBaseFile>
+		<DockerTargetOS>Linux</DockerTargetOS>
+	</PropertyGroup>
+</Project>
