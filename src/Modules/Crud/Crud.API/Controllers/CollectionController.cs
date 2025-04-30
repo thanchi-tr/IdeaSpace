@@ -11,8 +11,7 @@ namespace Crud.API.Controllers
     public class CollectionController : ControllerBase
     {
 
-        private ILogger _logger;
-        private IMapper _mapper;
-        private IRepositoryCertificateInfo<CollectionRestfulDTO, Collection> _repo;
+        //private ILogger _logger;
+        //private IMapper _mapper;
     }
 }

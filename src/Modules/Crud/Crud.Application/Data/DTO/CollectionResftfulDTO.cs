@@ -14,8 +14,8 @@ namespace Crud.Application.Data.DTO
         {
             public MappingProfile(HttpClient http)
             {
-                CreateMap<CollectionCreationResftfulDTO, Collection>()
-                    .ForMember(dest => dest.AuthorId, opts => opts.MapFrom(_ => http.GetUserId()));
+                //CreateMap<CollectionCreationResftfulDTO, Collection>()
+                //    .ForMember(dest => dest.AuthorId, opts => opts.MapFrom(_ => http.GetUserId()));
             }
         }
 

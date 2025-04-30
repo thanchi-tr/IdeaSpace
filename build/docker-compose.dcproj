@@ -1,9 +1,12 @@
 ﻿<Project Sdk="Microsoft.Docker.Sdk">
-	<PropertyGroup>
-		<ProjectVersion>2.1</ProjectVersion>
-		<DockerComposeProjectPath>..\</DockerComposeProjectPath>
-		<DockerComposeServiceName>rabbitmq</DockerComposeServiceName>
-		<DockerComposeBaseFile>build\docker-compose.yml</DockerComposeBaseFile>
-		<DockerTargetOS>Linux</DockerTargetOS>
-	</PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>55e32732-a555-fa48-8aa4-0ea1c8fd2681</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerComposeProjectPath>..\</DockerComposeProjectPath>
+    <DockerComposeServiceName>rabbitmq</DockerComposeServiceName>
+    <DockerComposeBaseFile>build\docker-compose.yml</DockerComposeBaseFile>
+    <DockerTargetOS>Linux</DockerTargetOS>
+  </PropertyGroup>
 </Project>

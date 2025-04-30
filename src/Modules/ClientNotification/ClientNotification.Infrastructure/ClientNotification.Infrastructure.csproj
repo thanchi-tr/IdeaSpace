@@ -9,8 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ClientNotification.Application\ClientNotification.Application.csproj" />
     <ProjectReference Include="..\ClientNotification.Domain\ClientNotification.Domain.csproj" />
-    <ProjectReference Include="..\IdeaSpace\src\Shared\Shared.API\Shared.Infrastructure\Shared.Infrastructure.csproj" />
-    <ProjectReference Include="..\IdeaSpace\src\Shared\Shared.Domain\Shared.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -53,7 +53,7 @@ services:
 
 networks:
   ideaspace_network:
-    driver: bridge
+    external: true
 
 volumes:
   postgres_data:
