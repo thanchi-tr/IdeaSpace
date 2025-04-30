@@ -5,11 +5,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy only the specific module
-COPY ./src/Modules/ExpirationDisplay ./Modules/ExpirationDisplay
+COPY ./src/Modules/APIGateway ./Modules/APIGateway
 COPY ./src/Shared ./Shared
 
 # Go to Worker project
-WORKDIR /src/Modules/ExpirationDisplay/ExpirationDisplay.Worker
+WORKDIR /src/Modules/APIGateway/APIGateway.Worker
 
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish
@@ -18,4 +18,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENTRYPOINT ["dotnet", "ExpirationDisplay.Worker.dll"]
+ENTRYPOINT ["dotnet", "APIGateway.Worker.dll"]

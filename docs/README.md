@@ -40,33 +40,3 @@ Architecture Overview
 
 Design Diagram:
 Store under docs/\* (Design are made using Draw.IO)
-
-
-## Starting Guide
-
-### Installation.
-
-	dotnet restore
-
-### Requirement
-
-	// Ensure Docker is running, then we can attempt start the redis, npsql, rabbitMq container
-	docker-compose up -f docker-compose.yml -d
-	//then start the module container
-	docker-compose up -f docker-compose.module.yml -d
-
-## Port mapping:(dev)
-
-#### External API:
-	API gateway: 5004
-
-#### Internal API:
-	Expiration Display: 5101
-	Data GateKeeper: 5102
-	Crud: 5103
-	Notification: 5105
-
-#### External Service:
-	Postgres SQL: 5432
-	Redis: 6379
-	RabbitMQ: 5672 (application)
