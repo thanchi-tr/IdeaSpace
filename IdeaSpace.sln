@@ -16,6 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{C4C87A46
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3805B80D-F717-476B-BF47-AC002C6ACD2C}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Design\GateKeeperSequenceAction.drawio = docs\Design\GateKeeperSequenceAction.drawio
+		docs\SequenceDiagram\Loging in flow.drawio = docs\SequenceDiagram\Loging in flow.drawio
+		docs\README.md = docs\README.md
+		docs\Design\RevisionService.drawio = docs\Design\RevisionService.drawio
+		docs\SequenceDiagram\SPA-System-interaction.drawio = docs\SequenceDiagram\SPA-System-interaction.drawio
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{112A13CC-CB15-4F64-BDBE-088F2CB57955}"
 EndProject
