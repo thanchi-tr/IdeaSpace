@@ -2,6 +2,7 @@
 {
     public static class DomainEventTypes
     {
+        public const string Empty = "";
         public const string SystemRecover = "sys.recover.event";
         public const string DomainDataModified = "idea.content.modified.event";
         public const string CollectionModified = "collection.modified.event";

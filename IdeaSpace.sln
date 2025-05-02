@@ -153,6 +153,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientNotification.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientNotification.Worker", "src\Modules\ClientNotification\ClientNotification.Worker\ClientNotification.Worker.csproj", "{BE226584-613F-6D5E-F648-36C2AC72610D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModuleDocumentaion", "ModuleDocumentaion", "{C62F4F60-3BAD-4B07-81A4-B222D541AEF8}"
+	ProjectSection(SolutionItems) = preProject
+		GatewayAPI.README.md = GatewayAPI.README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -371,6 +376,7 @@ Global
 		{FA8C3FBD-93AC-42B1-F29B-F37100795BEC} = {C67CE8F3-D561-4BC4-9FC5-4BF7D2AFE7A4}
 		{03B4EAF3-89D6-9554-24D4-DE069AB96ECF} = {C67CE8F3-D561-4BC4-9FC5-4BF7D2AFE7A4}
 		{BE226584-613F-6D5E-F648-36C2AC72610D} = {C67CE8F3-D561-4BC4-9FC5-4BF7D2AFE7A4}
+		{C62F4F60-3BAD-4B07-81A4-B222D541AEF8} = {3805B80D-F717-476B-BF47-AC002C6ACD2C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {161F9CD9-1D42-4863-ADED-CE4290B38439}

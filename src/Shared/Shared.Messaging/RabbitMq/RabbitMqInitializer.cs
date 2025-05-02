@@ -33,22 +33,31 @@ public class RabbitMqInitializer
 
         // Main exchange - compose of health and recover
         await channel.ExchangeDeclareAsync(Exchange.HEALTH,type: ExchangeType.Topic, durable: true);
-        await channel.QueueDeclareAsync(Queue.HEALTH_CHECK, durable: true, exclusive: false, autoDelete: false);
-
+        await channel.ExchangeDeclareAsync(Exchange.DLX, type: ExchangeType.Topic, durable: true);
         await channel.ExchangeDeclareAsync(Exchange.RECOVER, type: ExchangeType.Topic, durable: true);
-        await channel.ExchangeDeclareAsync(Exchange.RECOVER_DLX, type: ExchangeType.Topic, durable: true);
+        // only one exchange use for dead letter
         
         // Main queue with DLX (Dead Letter Exchange)
         var args = new Dictionary<string, object>
         {
-            { "x-dead-letter-exchange", Exchange.RECOVER_DLX }
+            { "x-dead-letter-exchange", Exchange.DLX },
         };
+        await channel.QueueDeclareAsync(Queue.HEALTH_CHECK, durable: true, exclusive: false, autoDelete: false);
+
         await channel.QueueDeclareAsync(Queue.DELTA_LOG, durable: true, exclusive: false, autoDelete: false, arguments: args);
-        await channel.QueueBindAsync(Queue.DELTA_LOG_DLQ, exchange: Exchange.RECOVER_DLX, routingKey: "#");
+        await channel.QueueDeclareAsync(Queue.DELTA_LOG_DLQ, durable: true, exclusive: false, autoDelete: false);
+        await channel.QueueBindAsync(Queue.DELTA_LOG, exchange: Exchange.RECOVER, routingKey: "#");
+        await channel.QueueBindAsync(Queue.DELTA_LOG_DLQ, exchange: Exchange.DLX, routingKey: "#");
+
         await channel.QueueDeclareAsync(Queue.RECOVER_COMMAND, durable: true, exclusive: false, autoDelete: false, arguments: args);
-        await channel.QueueBindAsync(Queue.RECOVER_COMMAND_DLQ, exchange: Exchange.RECOVER_DLX, routingKey: "#");
+        await channel.QueueDeclareAsync(Queue.RECOVER_COMMAND_DLQ, durable: true, exclusive: false, autoDelete: false);
+        await channel.QueueBindAsync(Queue.RECOVER_COMMAND, exchange: Exchange.RECOVER, routingKey: "#");
+        await channel.QueueBindAsync(Queue.RECOVER_COMMAND_DLQ, exchange: Exchange.DLX, routingKey: "#");
+
         await channel.QueueDeclareAsync(Queue.RECOVER_CLEAN, durable: true, exclusive: false, autoDelete: false, arguments: args);
-        await channel.QueueBindAsync(Queue.RECOVER_CLEAN_DLQ, exchange: Exchange.RECOVER_DLX, routingKey: "#");
+        await channel.QueueDeclareAsync(Queue.RECOVER_CLEAN_DLQ, durable: true, exclusive: false, autoDelete: false);
+        await channel.QueueBindAsync(Queue.RECOVER_CLEAN, exchange: Exchange.RECOVER, routingKey: "#");
+        await channel.QueueBindAsync(Queue.RECOVER_CLEAN_DLQ, exchange: Exchange.DLX, routingKey: "#");
 
         _logger.LogInformation("RabbitMQ infrastructure (Recover, Health) initialized successfully.");
     }
