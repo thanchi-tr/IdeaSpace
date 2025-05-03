@@ -14,5 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Shared.Messaging\Shared.Messaging.csproj" />
+    <ProjectReference Include="..\..\ClientNotification\ClientNotification.Application\ClientNotification.Application.csproj" />
+    <ProjectReference Include="..\..\PersistGateKeeper\PersistGateKeeper.Infrastructure\PersistGateKeeper.Infrastructure.csproj" />
+    <ProjectReference Include="..\CatastrophicRecovery.Infrastructure\CatastrophicRecovery.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

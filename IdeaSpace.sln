@@ -155,7 +155,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientNotification.Worker",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModuleDocumentaion", "ModuleDocumentaion", "{C62F4F60-3BAD-4B07-81A4-B222D541AEF8}"
 	ProjectSection(SolutionItems) = preProject
+		CatastrophicRecovery.README.md = CatastrophicRecovery.README.md
+		ClientNotification.README.md = ClientNotification.README.md
+		Crud.README.md = Crud.README.md
+		ExpirationDisplay.README.md = ExpirationDisplay.README.md
 		GatewayAPI.README.md = GatewayAPI.README.md
+		Revising.README.md = Revising.README.md
 	EndProjectSection
 EndProject
 Global

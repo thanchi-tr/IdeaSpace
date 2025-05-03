@@ -1,5 +1,6 @@
+using IdeaSpace.Infrastructure;
+using PersistGateKeeper.Infrastructure.Messaging.RabbitMQ.Config;
 using Shared.Messaging;
-using System.Threading.Tasks;
 namespace PersistGateKeeper.Worker
 {
     public class Program
@@ -8,7 +9,8 @@ namespace PersistGateKeeper.Worker
         {
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
-            builder.Services.ConfigureRabbitMq();
+            builder.Services.AddScoped<BaseRabbitMqInitializer, RabbitMqInitializer>();
+
             var host = builder.Build();
             await host.InitializeRabbitMqAsync();
             host.Run();

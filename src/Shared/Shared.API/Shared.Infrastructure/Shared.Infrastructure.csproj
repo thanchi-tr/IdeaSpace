@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Modules\Revising\Revising.Infrastructure\Revising.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Shared.Domain\Shared.Domain.csproj" />
   </ItemGroup>
 

@@ -1,3 +1,4 @@
+using IdeaSpace.Infrastructure;
 using Shared.Messaging;
 namespace Revising.Worker
 {
@@ -7,7 +8,7 @@ namespace Revising.Worker
         {
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
-            builder.Services.ConfigureRabbitMq();
+            builder.Services.AddScoped<BaseRabbitMqInitializer,BaseRabbitMqInitializer>();
             var host = builder.Build();
             await host.InitializeRabbitMqAsync();
             host.Run();

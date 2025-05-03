@@ -11,7 +11,7 @@ namespace Shared.Messaging
         public static IServiceCollection‎ ConfigureRabbitMq(this IServiceCollection‎ services)
         {
             services.AddSingleton<IRabbitMqConnectionFactory, RabbitMqConnectionFactory>();
-            services.AddSingleton<RabbitMqInitializer>();
+            //services.AddSingleton<RabbitMqInitializer>();
             return services;
         }
     }

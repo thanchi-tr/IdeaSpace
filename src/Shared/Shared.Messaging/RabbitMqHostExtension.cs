@@ -15,9 +15,7 @@ namespace Shared.Messaging
             var hostName = config["RabbitMQ:HostName"];
             var userName = config["RabbitMQ:UserName"];
 
-            Console.WriteLine($"🐇 RabbitMQ Config: HostName = {hostName}, UserName = {userName}");
-
-            var initializer = scope.ServiceProvider.GetRequiredService<RabbitMqInitializer>();
+            var initializer = scope.ServiceProvider.GetRequiredService<BaseRabbitMqInitializer>();
             await initializer.Initialize();
         }
     }

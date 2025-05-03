@@ -14,5 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Shared.Messaging\Shared.Messaging.csproj" />
+    <ProjectReference Include="..\PersistGateKeeper.Infrastructure\PersistGateKeeper.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

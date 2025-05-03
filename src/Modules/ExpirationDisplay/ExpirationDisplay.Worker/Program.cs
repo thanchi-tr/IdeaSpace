@@ -1,3 +1,5 @@
+using ExpirationDisplay.Infrastructure.Messaging.RabbitMQ.Config;
+using IdeaSpace.Infrastructure;
 using Shared.Messaging;
 namespace ExpirationDisplay.Worker
 {
@@ -7,7 +9,8 @@ namespace ExpirationDisplay.Worker
         {
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
-            builder.Services.ConfigureRabbitMq();
+            //builder.Services.ConfigureRabbitMq();
+            builder.Services.AddScoped<BaseRabbitMqInitializer, RabbitMqInitializer>();
             var host = builder.Build();
             await host.InitializeRabbitMqAsync();
             host.Run();
