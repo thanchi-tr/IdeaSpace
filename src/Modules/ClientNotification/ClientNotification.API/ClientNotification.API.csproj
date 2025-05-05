@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+	<AssemblyName>IdeaSpace.Modules.ClientNotification.API</AssemblyName>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -12,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Shared.Kernel\Shared.Kernel.csproj" />
     <ProjectReference Include="..\ClientNotification.Application\ClientNotification.Application.csproj" />
     <ProjectReference Include="..\ClientNotification.Infrastructure\ClientNotification.Infrastructure.csproj" />
   </ItemGroup>

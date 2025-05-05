@@ -1,24 +1,22 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using RabbitMQ.Client;
+using Shared.Worker.Messaging;
+using Shared.Worker.Recovery;
+
 namespace APIGateway.Worker
 {
-    public class Worker : BackgroundService
+    /// <summary>
+    /// API Gateway worker access rabbitMQ (so it consume
+    /// </summary>
+    public class Worker : DeadLetterWorkerBase<string>
     {
-        private readonly ILogger<Worker> _logger;
-
-        public Worker(ILogger<Worker> logger)
+        public Worker(IChannel channel, string queueName, ILogger<DeadLetterWorkerBase<string>> logger, HealthCheckService healthCheckService) : base(channel, queueName, logger)
         {
-            _logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task HandleDeadLetterAsync(string payload, int retryCount, CancellationToken token)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
-            }
+            throw new NotImplementedException();
         }
     }
 }

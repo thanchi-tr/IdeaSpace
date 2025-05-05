@@ -1,5 +1,5 @@
 ﻿
-namespace Shared.Messaging.Interface.RabbitMqSettings
+namespace Shared.Messaging.Interface.Contract
 {
     public class RabbitMqOptions
     {

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Shared.Messaging.Interface.Contract;
+
 namespace Shared.Messaging
 {
     public static class RabbitMqHostExtensions
@@ -11,9 +13,7 @@ namespace Shared.Messaging
             using var scope = host.Services.CreateScope();
 
             var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-
-            var hostName = config["RabbitMQ:HostName"];
-            var userName = config["RabbitMQ:UserName"];
+            host.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
 
             var initializer = scope.ServiceProvider.GetRequiredService<BaseRabbitMqInitializer>();
             await initializer.Initialize();

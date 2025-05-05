@@ -1,36 +1,37 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Shared.Messaging.Interface;
-using Shared.Messaging.Interface.RabbitMqSettings;
+using Shared.Messaging.Interface.Contract;
 
 namespace Shared.Messaging
 {
     public class RabbitMqConnectionManager : IRabbitMqConnectionManager
     {
         private readonly ILogger<RabbitMqConnectionManager> _logger;
-        private readonly RabbitMqOptions _options;
+        private readonly IOptions<RabbitMqOptions> _opts;
         private readonly Lazy<Task<IConnection>> _connection;
         private bool _disposed;
 
         public RabbitMqConnectionManager(
             ILogger<RabbitMqConnectionManager> logger,
-            RabbitMqOptions options)
+            IOptions<RabbitMqOptions> options)
         {
             _logger = logger;
-            _options = options;
+            _opts = options;
             _connection = new Lazy<Task<IConnection>>(ConnectAsync, true);
         }
 
         private async Task<IConnection> ConnectAsync()
         {
-            _logger.LogInformation("Initializing RabbitMQ connection to {Host}", _options.HostName);
+            _logger.LogInformation("Initializing RabbitMQ connection to {Host}", _opts.Value.HostName);
 
             var factory = new ConnectionFactory
             {
-                HostName = _options.HostName,
-                UserName = _options.UserName,
-                Password = _options.Password,
-                Port = int.Parse(_options.Port)
+                HostName = _opts.Value.HostName,
+                UserName = _opts.Value.UserName,
+                Password = _opts.Value.Password,
+                Port = int.Parse(_opts.Value.Port)
             };
             try
             {

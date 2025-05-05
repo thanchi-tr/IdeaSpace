@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 
 namespace Shared.Infrastructure.Redis
 {

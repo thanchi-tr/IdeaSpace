@@ -9,7 +9,7 @@ namespace Shared.Domain.Constant.RabbitMQ
     public static class Queue
     {
         public const string HEALTH_CHECK = "check.health.queue";
-        public const string RECOVER_DLQ = "sys.recover.dead.letter.queue";
+        public const string RECOVER = "sys.recover";
 
         public const string CACHING_OPERATION = "cache.operate.lazy";
         public const string MODIFY_OPERATION = "modify.operate.lazy";

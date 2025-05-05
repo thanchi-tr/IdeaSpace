@@ -1,4 +1,4 @@
-﻿namespace Shared.Messaging.RabbitMqSettings
+﻿namespace Shared.Messaging.Contract
 {
     public class EventEnvelope<TPayload>
     {

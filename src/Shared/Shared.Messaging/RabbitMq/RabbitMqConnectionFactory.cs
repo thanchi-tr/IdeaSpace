@@ -1,6 +1,8 @@
-﻿using IdeaSpace.Infrastructure.Interface.MessageBroker;
+﻿using IdeaSpace.Infrastructure.Interface.Contract;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Shared.Messaging.Interface.Contract;
 
 namespace IdeaSpace.Infrastructure.Messaging.RabbitMq;
 
@@ -8,10 +10,11 @@ public class RabbitMqConnectionFactory : IRabbitMqConnectionFactory
 {
     private readonly IConfiguration _configuration;
     private IConnection _connection;
-
-    public RabbitMqConnectionFactory(IConfiguration configuration)
+    private readonly IOptions<RabbitMqOptions> _opts;
+    public RabbitMqConnectionFactory(IConfiguration configuration, IOptions<RabbitMqOptions> opts)
     {
         _configuration = configuration;
+        _opts = opts;
     }
 
     public async Task<IConnection> CreateConnectionAsync()
@@ -21,9 +24,9 @@ public class RabbitMqConnectionFactory : IRabbitMqConnectionFactory
 
         var factory = new ConnectionFactory
         {
-            HostName = _configuration["RabbitMq:HostName"] ?? "localhost",
-            UserName = _configuration["RabbitMq:UserName"] ?? "admin",
-            Password = _configuration["RabbitMq:Password"] ?? "admin"
+            HostName = _opts.Value.HostName ?? "localhost",
+            UserName = _opts.Value.UserName ?? "admin",
+            Password = _opts.Value.Password ?? "admin"
         };
 
         _connection = await factory.CreateConnectionAsync();

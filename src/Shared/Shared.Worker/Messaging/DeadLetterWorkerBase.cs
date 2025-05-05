@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 
 namespace Shared.Worker.Messaging
 {
@@ -13,21 +16,25 @@ namespace Shared.Worker.Messaging
     /// <typeparam name="TPayload">
     ///     
     /// </typeparam>
-    public abstract class DeadLetterWorkerBase<TPayload>
+    public abstract class DeadLetterWorkerBase<TPayload> : BackgroundService
     {
         private readonly IChannel _channel;
         private readonly string _queueName;
         private readonly ILogger<DeadLetterWorkerBase<TPayload>> _logger;
 
+        private CancellationTokenSource? _ctoken;
+        private Task? _bgTask;
         protected DeadLetterWorkerBase(IChannel channel, string queueName, ILogger<DeadLetterWorkerBase<TPayload>> logger)
         {
             _channel = channel;
             _queueName = queueName;
             _logger = logger;
+
         }
-        public async Task Start(CancellationToken token)
+        public async Task AttachDLQConsumerAsync(CancellationToken token)
         {
             
+            var moduleName = Assembly.GetEntryAssembly().GetName().Name;
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (model, ea) =>
             {
@@ -39,7 +46,7 @@ namespace Shared.Worker.Messaging
 
                     var xDeathCount = GetRetryCount(ea.BasicProperties.Headers);
 
-                    _logger.LogInformation("[DLQ] Message received with retry count {RetryCount}", xDeathCount);
+                    _logger.LogInformation($"{moduleName}:DLQ for {_queueName}:Message received with retry count {xDeathCount}");
 
                     await HandleDeadLetterAsync(payload, xDeathCount, token);
 
@@ -47,13 +54,13 @@ namespace Shared.Worker.Messaging
                 }
                 catch (JsonException ex)
                 {
-                    _logger.LogError(ex, "[DLQ] Failed to deserialize payload");
+                    _logger.LogError(ex, $"{moduleName}.DLQWorker:DLQ for {_queueName}:Fail to deserialise Payload");
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
                     return;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "[DLQ] Failed to handle message");
+                    _logger.LogError(ex, $"{moduleName}.DLQWorker:DLQ for {_queueName}: Failed to handle message");
                     await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, token); // discard to avoid poison loop
                 }
             };
@@ -88,6 +95,13 @@ namespace Shared.Worker.Messaging
         /// such as cleanup, audit logging, retry forwarding, or alerts.
         /// </summary>
         protected abstract Task HandleDeadLetterAsync(TPayload payload, int retryCount, CancellationToken token);
+
+
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        { 
+            _ctoken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        }
 
     }
 }
