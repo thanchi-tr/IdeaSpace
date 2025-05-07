@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Kernel.Observability.HealthCheck;
+using System.Text;
 
 namespace Shared.Kernel.GeneralConfig
 {
@@ -16,7 +18,7 @@ namespace Shared.Kernel.GeneralConfig
         /// "AllowedOrigins": [
         ///"https://localhost:5003", // list all the port use by API gateway or default to 5003
         ///"https://staging.yourapp.com"
-]
+
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -24,7 +26,6 @@ namespace Shared.Kernel.GeneralConfig
         {
             var allowedOrigins = configuration.GetSection("AllowedOrigins")
                     .Get<string[]>() ?? new[] { "https://localhost:5003" };
-            
 
             
             services.AddCors(options =>

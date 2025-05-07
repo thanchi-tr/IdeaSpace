@@ -1,4 +1,4 @@
-﻿using IdeaSpace.Infrastructure.Interface.MessageBroker;
+﻿using IdeaSpace.Infrastructure.Interface.Contract;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;

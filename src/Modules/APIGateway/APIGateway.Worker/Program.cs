@@ -1,5 +1,6 @@
 
 using Shared.Kernel.Observability.HealthCheck;
+using Shared.Messaging.Interface.Contract;
 
 namespace APIGateway.Worker
 {
@@ -9,6 +10,8 @@ namespace APIGateway.Worker
         {
             var builder = Host.CreateApplicationBuilder(args);
             var envTag = builder.Configuration["Environment"] ?? "local";
+            var config = builder.Configuration;
+            builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
             builder.Services.AddHostedService<Worker>();
 
             builder.Services.AddHealthChecks()

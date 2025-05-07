@@ -11,10 +11,6 @@ namespace Shared.Messaging
         public static async Task InitializeRabbitMqAsync(this IHost host)
         {
             using var scope = host.Services.CreateScope();
-
-            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-            host.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
-
             var initializer = scope.ServiceProvider.GetRequiredService<BaseRabbitMqInitializer>();
             await initializer.Initialize();
         }

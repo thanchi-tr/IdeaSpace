@@ -24,12 +24,25 @@ services:
   redis:
     image: redis:latest
     container_name: local-redis
+    command: >
+      redis-server
+        --appendonly yes                # AOF persistence
+        --appendfsync everysec          # disk flush every second
+        --requirepass devpass           # simple AUTH for dev
+        --maxmemory 256mb               # guard memory on laptops
+        --maxmemory-policy volatile-ttl # evict only keys with TTL
+    restart: unless-stopped
     ports:
       - "6379:6379"
     networks:
       - ideaspace_network
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "devpass", "PING"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   # RabbitMQ service
   rabbitmq:

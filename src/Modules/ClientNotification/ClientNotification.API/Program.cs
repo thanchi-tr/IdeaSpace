@@ -1,5 +1,6 @@
 
 using Shared.Kernel.GeneralConfig;
+using Shared.Messaging.Interface.Contract;
 
 namespace ClientNotification.API
 {
@@ -8,7 +9,8 @@ namespace ClientNotification.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            var config = builder.Configuration;
+            builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
             // Add services to the container.
 
             builder.Services.AddControllers();

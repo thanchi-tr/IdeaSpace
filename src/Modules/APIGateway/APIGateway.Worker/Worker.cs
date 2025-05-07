@@ -10,7 +10,7 @@ namespace APIGateway.Worker
     /// </summary>
     public class Worker : DeadLetterWorkerBase<string>
     {
-        public Worker(IChannel channel, string queueName, ILogger<DeadLetterWorkerBase<string>> logger, HealthCheckService healthCheckService) : base(channel, queueName, logger)
+        public Worker(IChannel channel, string queueName, Serilog.ILogger logger, HealthCheckService healthCheckService) : base(channel, queueName, logger)
         {
         }
 

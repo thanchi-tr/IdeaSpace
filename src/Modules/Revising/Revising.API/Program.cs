@@ -1,4 +1,5 @@
 using Shared.Messaging;
+using Shared.Messaging.Interface.Contract;
 namespace Revising.API
 {
     public class Program
@@ -6,14 +7,14 @@ namespace Revising.API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            var config = builder.Configuration;
+            builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
             // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.ConfigureRabbitMq();
             var app = builder.Build();
             await app.InitializeRabbitMqAsync();
             // Configure the HTTP request pipeline.

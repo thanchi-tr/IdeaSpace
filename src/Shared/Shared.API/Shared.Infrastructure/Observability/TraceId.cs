@@ -8,9 +8,8 @@ namespace Shared.Infrastructure.Observability
         public Guid IssuerId { get; init; } 
         public DateTime Timestamp { get; init; }
         public override string ToString()
-        {
-            return $"{IssuerType.ToString()}:{IssuerId}:{Timestamp.ToUniversalTime():0}";
-        }
+                => $"{IssuerType}:{IssuerId}:{Timestamp:O}";
+
 
         /// <summary>
         /// Attempt to deserialised the string back to readable

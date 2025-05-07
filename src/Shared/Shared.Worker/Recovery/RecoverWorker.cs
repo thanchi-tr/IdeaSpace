@@ -35,7 +35,7 @@ namespace Shared.Worker.Recovery
                     }
                 }
 
-                await Task.Delay(CHECK_INTERVAL, cancellationToken); // check every 5s
+                await Task.Delay(CHECK_INTERVAL, cancellationToken);
             }
         }
     }

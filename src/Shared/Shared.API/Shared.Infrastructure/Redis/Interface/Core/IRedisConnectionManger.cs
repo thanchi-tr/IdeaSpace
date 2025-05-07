@@ -1,10 +1,10 @@
 ﻿using StackExchange.Redis;
 
-namespace Shared.Infrastructure.Redis
+namespace Shared.Infrastructure.Redis.Interface.Core
 {
     public interface IRedisConnectionManger
     {
-        StackExchange.Redis.IDatabase GetDatabase(int db);
+        IDatabase GetDatabase(int db);
         ISubscriber GetSubscriber();
         IServer GetServer(string host, int port);
         IConnectionMultiplexer GetConnection();

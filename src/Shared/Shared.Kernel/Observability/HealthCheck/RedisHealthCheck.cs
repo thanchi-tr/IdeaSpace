@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Shared.Infrastructure.Redis;
+using Shared.Infrastructure.Redis.Interface.Core;
 using System.Reflection;
 namespace Shared.Kernel.Observability.HealthCheck
 {

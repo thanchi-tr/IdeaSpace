@@ -1,4 +1,4 @@
-﻿using IdeaSpace.Infrastructure.Interface.MessageBroker;
+﻿using IdeaSpace.Infrastructure.Interface.Contract;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;

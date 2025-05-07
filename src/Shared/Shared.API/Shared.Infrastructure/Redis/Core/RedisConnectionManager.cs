@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shared.Infrastructure.Redis.Interface.Core;
+using Shared.Infrastructure.Redis.Model.Config;
 using StackExchange.Redis;
-namespace Shared.Infrastructure.Redis
+namespace Shared.Infrastructure.Redis.Core
 {
     public class RedisConnectionManager : IRedisConnectionManger
     {
@@ -29,7 +31,7 @@ namespace Shared.Infrastructure.Redis
             });
         }
 
-        public StackExchange.Redis.IDatabase GetDatabase(int db = -1) => _lazyConnection.Value.GetDatabase(db);
+        public IDatabase GetDatabase(int db = -1) => _lazyConnection.Value.GetDatabase(db);
 
         public ISubscriber GetSubscriber() => _lazyConnection.Value.GetSubscriber();
 

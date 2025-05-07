@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		appsettings.Development.json = appsettings.Development.json
+		appsettings.json = appsettings.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EB21EA9F-360D-41C4-A651-10AF7E5CB8F1}"
 EndProject
@@ -107,6 +111,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		appsettings.json = appsettings.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Domain", "src\Shared\Shared.Domain\Shared.Domain.csproj", "{99A86DFB-741C-4266-998C-C2311BC3DEF6}"
@@ -155,6 +160,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientNotification.Worker",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModuleDocumentaion", "ModuleDocumentaion", "{C62F4F60-3BAD-4B07-81A4-B222D541AEF8}"
 	ProjectSection(SolutionItems) = preProject
+		All.Logger.README.md = All.Logger.README.md
 		CatastrophicRecovery.README.md = CatastrophicRecovery.README.md
 		ClientNotification.README.md = ClientNotification.README.md
 		Crud.README.md = Crud.README.md

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using StackExchange.Redis;
 
-namespace Shared.Infrastructure.Redis
+namespace Shared.Infrastructure.Redis.Model.Config
 {
     public class RedisOptions
     {
@@ -13,5 +9,6 @@ namespace Shared.Infrastructure.Redis
         public int ConnectRetry = 3;
         public int ConnectTimeout = 5000;
         public int KeepAlive = 180;
+        public IReconnectRetryPolicy RetryPolicy { get; set; } = new ExponentialRetry(5000);
     }
 }
