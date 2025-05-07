@@ -161,6 +161,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModuleDocumentaion", "ModuleDocumentaion", "{C62F4F60-3BAD-4B07-81A4-B222D541AEF8}"
 	ProjectSection(SolutionItems) = preProject
 		All.Logger.README.md = All.Logger.README.md
+		Cache.Redis.README.md = Cache.Redis.README.md
 		CatastrophicRecovery.README.md = CatastrophicRecovery.README.md
 		ClientNotification.README.md = ClientNotification.README.md
 		Crud.README.md = Crud.README.md

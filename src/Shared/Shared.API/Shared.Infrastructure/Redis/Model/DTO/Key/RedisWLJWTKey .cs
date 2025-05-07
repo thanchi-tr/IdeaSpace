@@ -1,0 +1,15 @@
+﻿using Shared.Domain.Constant.Redis;
+using Shared.Infrastructure.Redis.Interface.Core;
+using StackExchange.Redis;
+
+namespace Shared.Infrastructure.Redis.Model.DTO.Key
+{
+    public class RedisWLJWTKey : IRedisSerialise
+    {
+        public string Jti { get; set; }
+        public RedisKey ToRedisKey()
+        {
+            return new RedisKey($"{Prefix.JwtWhiteList}:JWT:{Jti}");
+        }
+    }
+}

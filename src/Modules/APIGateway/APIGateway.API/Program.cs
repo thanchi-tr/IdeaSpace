@@ -26,7 +26,7 @@ namespace APIGateway.API
             builder.Services.AddSingleton<TokenValidationParameters>(provider =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>();
-                var secret = configuration["Jwt:SecretKey"];
+                var secret = configuration["Jwt:SecretKey"];//?
 
                 // This is in pre build, we want it to fail fast
                 if (string.IsNullOrWhiteSpace(secret) || secret.Length < BITS256_IN_NUM)

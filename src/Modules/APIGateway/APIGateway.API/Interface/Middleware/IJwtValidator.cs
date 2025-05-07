@@ -12,14 +12,6 @@ namespace APIGateway.API.Interface.Middleware
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        UserContext? Validate(string token);
-        
-        /// <summary>
-        /// Intended usage:
-        ///     - in the jwt, parse and map all claim to Dictionary
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Dictionary<string, string> ExtractClaims(string token);
+        Task<UserContext?> ValidateAsync(string token);
     }
 }

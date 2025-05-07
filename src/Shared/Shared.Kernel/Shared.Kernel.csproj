@@ -26,15 +26,5 @@
 	  <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 	  <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shared.API\Shared.Infrastructure\Shared.Infrastructure.csproj" />
-  </ItemGroup>
 <!-- copy the central JSON into each consumer’s output folder -->
-  <ItemGroup>
-	  <None Include="..\src\appsettings.json">
-	    <Link>appsettings.json</Link>
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-  </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@ namespace Shared.Infrastructure.Redis.Core.Read
             _jsonOptions = jsonOptions;
         }
 
+
         public async Task<ValueDTO?> ReadAsync(KeyDTO key, CancellationToken ct = default)
         {
             var redisKey = key.ToRedisKey();
