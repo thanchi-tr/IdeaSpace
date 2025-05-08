@@ -1,72 +1,85 @@
-﻿IdeaSpace
-My Learning As A Service (LAAS) Modular Monolith that lean toward micro service. Where it is a complete distributed system( using Rabbit MQ).
+﻿# 💡 IdeaSpace: Learning as a Service Platform
+**IdeaSpace** is a high-resilience, modular monolith with microservice-leaning architecture. It delivers event-driven coordination, fault-tolerant recovery, and fully observable system behavior — built for long-term maintainability and scale.
 
-About
-This project implements a high-resilience, event-sourced modular monolith architecture.
+---
+## 🧠 Core Philosophy
 
-It features:
-• Event-Driven Core: All domain changes are captured as immutable DeltaLog events published via RabbitMQ.
+This project adopts a **distributed stakeholder model**:
+- Modular services **coordinate via events**, not direct calls.
+- All state changes are **captured, auditable, and recoverable**.
+- Modules can be **independently deployed or scaled** as needed.
 
-• Batch-Based Processing: Client operations are staged and flushed atomically in optimized batches, reducing DB load.
+---
 
-• Bulk Persistence: Entity operations are staged and committed efficiently using EFCore BulkExtensions.
+## ⚙️ Key Features
 
-• Distributed Stakeholders: SQL persistence, Redis caching, and Recovery orchestration operate independently via decoupled event consumption.
+| Category                | Description                                                                 |
+|-------------------------|-----------------------------------------------------------------------------|
+| 🧩 Modular Monolith     | Feature-isolated folders with layered separation (.API / .Worker / .Domain) |
+| 📦 RabbitMQ Backbone    | Topic-based routing and fan-out messaging                                   |
+| 📑 DeltaLog Pattern     | All domain changes are event-sourced and published                          |
+| 💽 EFCore Bulk Write    | Batch persistence via `EFCore.BulkExtensions`                               |
+| 🔁 Retry & Recovery     | Soft (live fix) and hard (delta replay) recovery modes                      |
+| 🚦 Dead Letter Queues   | Fault isolation via structured retry channels                               |
+| 🧵 TraceId Propagation  | Every operation traceable across module boundaries                          |
+| 🚀 Redis Integration    | High-speed caching with TTL + Outbox retry                                  |
+| 📊 Observability        | Serilog logs + categorized file sinks + trace context                       |
 
-• Soft Recovery (Live Repair): Real-time sequence tracking auto-heals missing events using Delta replay.
-
-• Hard Recovery (Crash Restore): Full snapshot + delta replay restores system state after catastrophic failures.
-
-• Observability: Full TraceId propagation for end-to-end distributed tracing across all modules.
-
-• Scalability Ready: Stakeholders are modular and horizontally scalable. Recovery designed for large data volumes.
-
-Architecture Overview
-• 🛠 Modular Monolith (feature-isolated, clean layering)
-
-• 📦 RabbitMQ Event Mesh (Topic exchanges for decoupled communication)
-
-• 🗄 EFCore + BulkExtensions (optimized batch writes)
-
-• 🧠 In-Memory State Tracking + Snapshot Serialization
-
-• 💾 Redis Caching for fast reads
-
-• 🔄 Crash-Tolerant Recovery Pipeline
-
-• 🕵️ Full Event Audit Trail with TraceIds
-
-• 🛡 Dead Letter Queues for fault isolation
-
-Design Diagram:
-Store under docs/\* (Design are made using Draw.IO)
+---
+## 🗺 Architecture Overview
+[Client] → [API Gateway] → [RabbitMQ Exchange] → [Crud | GateKeeper | ExpirationDisplay | Revising | Notification | Recovery]
+→ [Redis Cache (Outbox, WL/BL)]  → [SQL DB (batch persisted)]
 
 
 ## Starting Guide
 
-### Installation.
 
-	dotnet restore
+> ⚠️ Each module listens for specific events and acts independently based on contract and responsibility.
 
-### Requirement
+---
 
-	// Ensure Docker is running, then we can attempt start the redis, npsql, rabbitMq container
-	docker-compose up -f docker-compose.yml -d
-	//then start the module container
-	docker-compose up -f docker-compose.module.yml -d
+## 🏗 Initialization Requirements
+
+### Prerequisites
+- [.NET 8 SDK](https://dotnet.microsoft.com/download)
+- Docker & Docker Compose
+
+### 1️⃣ Restore & Build
+
+```bash
+dotnet restore
+```
+
+### 2️⃣ Start Infrastructure
+
+```
+docker-compose -f docker-compose.yml up -d
+```
+
+### 3️⃣ Start Application Modules
+```
+docker-compose -f docker-compose.module.yml up -d
+```
 
 ## Port mapping:(dev)
 
-#### External API:
-	API gateway: 5004
+| Service               | Port  | Type         |
+| --------------------- | ----- | ------------ |
+| 🧩 API Gateway        | 5004  | External API |
+| 🧠 Expiration Display | 5101  | Internal API |
+| 🔒 Data GateKeeper    | 5102  | Internal API |
+| 📋 CRUD               | 5103  | Internal API |
+| 📣 Notification       | 5105  | Internal API |
+| 🐘 PostgreSQL         | 5432  | DB           |
+| 🧠 Redis              | 6379  | Cache        |
+| 📬 RabbitMQ           | 5672  | Messaging    |
 
-#### Internal API:
-	Expiration Display: 5101
-	Data GateKeeper: 5102
-	Crud: 5103
-	Notification: 5105
 
-#### External Service:
-	Postgres SQL: 5432
-	Redis: 6379
-	RabbitMQ: 5672 (application)
+# 📂 Documentation
+- System design (architecture, event flows, responsibilities): docs/
+
+- Logging Strategy: docs/Logging.md
+
+- API Gateway Auth & JWT Flow: docs/APIGateway.md
+
+>💡 Main system design created using [draw.io], export as .drawio.svg in /docs.
