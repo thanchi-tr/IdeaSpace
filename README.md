@@ -1,6 +1,7 @@
 ﻿# 💡 IdeaSpace: Learning as a Service Platform
 **IdeaSpace** is a high-resilience, modular monolith with microservice-leaning architecture. It delivers event-driven coordination, fault-tolerant recovery, and fully observable system behavior — built for long-term maintainability and scale.
 
+## Status: Complete phase 2 : Setting up Infrastructure.
 ---
 ## 🧠 Core Philosophy
 
