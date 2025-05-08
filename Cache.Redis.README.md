@@ -57,10 +57,19 @@ cfg.ReconnectRetryPolicy  = new ExponentialRetry(5000);
 
 This write-through wrapper buffers writes to Redis in case of connection drop (i.e., Redis is down but the app is still running). It retries every 100ms until Redis is reachable again.
 
-- Respects TTL
+- Respects TTL : NOTE: at base class, we ensure infrastructure failure on fail to pass, set up using ttl to
+    to eliminate silence break point
 - Is thread-safe via `SemaphoreSlim`
 - Uses a `ConcurrentQueue` as the fallback store
 - Logs failure using `ModuleLog` type with full `TraceId` context
+
+### 👇 Auto-Routed Write Behavior
+| Value Type                          | Redis Write Strategy |
+|------------------------------------|-----------------------|
+| Implements `IExtractHashEntries`   | `HashSetAsync(...)`   |
+| Any other DTO                      | `StringSetAsync(...)` |
+
+This logic is embedded in `EnqueueAsync()` so that upstream services don’t need to worry about Redis specifics.
 
 ### Sample TraceId Log
 ## 🔑 Key DTO → Redis Key Conventions
@@ -92,6 +101,7 @@ public record GateCacheKey(Guid traceId, Guid batchId, Guid ideaId)
 | **Retry / back-off** | `cfg.ConnectRetry=5`, `ReconnectRetryPolicy=ExponentialRetry(5000)` | Logs but doesn’t crash services during hiccups.    |
 | **Memory cap**       | `--maxmemory 256mb --maxmemory-policy volatile-ttl`                 | Evicts only TTL keys if the cap is hit.            |
 | **Health-check**     | Compose probe + .NET `RedisHealthCheck`                             | `GET /health` returns `Healthy` only after `PING`. |
+| **MaxRetry + escaltion cb**     | inject context + escalation hook                             | if retry fail more than a config max retry, system will call the escalation hook |
 
 ---
 ## 🏃‍♂️ Local Setup & Commands

@@ -3,6 +3,7 @@ using Serilog;
 using Serilog.Context;
 using Shared.Infrastructure.Observability;
 using Shared.Infrastructure.Redis.Interface.Core;
+using Shared.Infrastructure.Redis.Interface.Extension.Operation;
 using Shared.Infrastructure.Redis.Interface.Extension.Recovery;
 using Shared.Infrastructure.Redis.Model;
 using Shared.Kernel.GeneralConfig;
@@ -11,7 +12,6 @@ using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 
 namespace Shared.Infrastructure.Redis.Core.Write.Extend
 {
@@ -26,11 +26,21 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
     {
         private readonly ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>> _queue;
         private bool _isSchedulerRun = false;
+
+
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ILogger _logger;
         private readonly ModuleMetaData _moduleMetaData;
         public readonly int RETRY_INTERVAL = 100;
-        public RedisWriterOutBox(IRedisConnectionManger conn, JsonSerializerOptions jsonOptions, ILogger logger, IConfiguration config) : base(conn, jsonOptions)
+        private readonly int MaxRetryCount;// default total time 30s 
+        private readonly Func<Task> _redisHealingEscalationCB;
+        public RedisWriterOutBox(
+            IRedisConnectionManger conn, 
+            JsonSerializerOptions jsonOptions, 
+            ILogger logger,
+            IConfiguration config,
+            Func<Task>  escalationCB
+            ) : base(conn, jsonOptions)
         {
             _queue = new ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>>();
             // This failure point will be report in module event
@@ -38,7 +48,13 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
             _moduleMetaData = config
                 .GetSection("AppMetaData:ModulesMDatas:Redis")
                 .Get<ModuleMetaData>() ?? new ModuleMetaData { IssuerId = Guid.NewGuid(), IssuerType = Observability.IssuerType.Internal };
-
+            var retryCount = config
+                .GetSection("AppMetaData:ModulesMDatas:RedisConfig:MaxRetry")
+                .Get<int>();
+            MaxRetryCount = retryCount == 0 
+                ? 300 // default to 30s total attempt wait for revolving
+                : retryCount;
+            _redisHealingEscalationCB = escalationCB;
         }
 
         public async Task EnqueueAsync(KeyDTO key, ValueDTO value, TimeSpan ttl, CancellationToken ct = default)
@@ -48,6 +64,10 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
                 await _semaphore.WaitAsync(ct);
                 try
                 {
+                    if(value is IExtractHashEntries extractable)
+                    {
+                        await this.WriteHashAsync(key, extractable, ttl, ct);
+                    }
                     await this.WriteAsync(key, value, ttl, ct);
                 }
                 finally
@@ -82,8 +102,9 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
 
         public async Task RetryAsync(CancellationToken ct = default)
         {
+            var count = 0;
             // we add the retry number later
-            while (_isSchedulerRun || _queue.IsEmpty)
+            while (_isSchedulerRun || _queue.IsEmpty || count == MaxRetryCount)
             {
                 await _semaphore.WaitAsync(ct);
                 try
@@ -92,6 +113,7 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
                         await this.EnqueueAsync(redisInstance.Key, redisInstance.Value, redisInstance.TTL, ct);
                     else
                         _isSchedulerRun = false;
+                    count++;
                 }
                 finally
                 {
@@ -99,6 +121,7 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
                 }
                 await Task.Delay(RETRY_INTERVAL, ct);
             }
+            await _redisHealingEscalationCB();
         }
     }
 }
