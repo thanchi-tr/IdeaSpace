@@ -21,10 +21,12 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
     /// </summary>
     /// <typeparam name="KeyDTO"></typeparam>
     /// <typeparam name="ValueDTO"></typeparam>
-    public class RedisWriterOutBox<KeyDTO, ValueDTO> : RedisWriter<KeyDTO, ValueDTO>, IRedisWriteOutBox<KeyDTO, ValueDTO>
+    public class RedisWriterOutBox<KeyDTO, ValueDTO> 
+        : RedisWriter<KeyDTO, ValueDTO>, IRedisWriteOutBox<KeyDTO, ValueDTO>
         where KeyDTO : IRedisSerialise
     {
         private readonly ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>> _queue;
+        private readonly int _maxCapacity;
         private bool _isSchedulerRun = false;
 
 
@@ -45,6 +47,7 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
             _queue = new ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>>();
             // This failure point will be report in module event
             _logger = logger.ForContext("Type", LoggerType.ModuleLog);
+            _maxCapacity = config.GetSection("AppMetaData:ModulesMDatas:Redis:MaxRetryCapacity").Get<int>();
             _moduleMetaData = config
                 .GetSection("AppMetaData:ModulesMDatas:Redis")
                 .Get<ModuleMetaData>() ?? new ModuleMetaData { IssuerId = Guid.NewGuid(), IssuerType = Observability.IssuerType.Internal };
@@ -77,16 +80,18 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
             }
             catch (RedisConnectionException ex)
             {
-                using(LogContext.PushProperty("TraceId", new TraceId
+                using (LogContext.PushProperty("TraceId", new TraceId(
+                    issuerId: _moduleMetaData.IssuerId,
+                    issuerType: _moduleMetaData.IssuerType )
+                ))
                 {
-                    IssuerType = _moduleMetaData.IssuerType,
-                    IssuerId = _moduleMetaData.IssuerId,
-                    Timestamp = DateTime.UtcNow,
-                }))
-                {
-                    _logger.Error($"{Assembly.GetEntryAssembly().GetName().Name} Redis connection drop, Initiate retry every {RETRY_INTERVAL}ms");
+                    var moduleName = Assembly.GetEntryAssembly()?.GetName().Name ?? ""; // if missing can leave blank, and opt for traceId
+                    _logger.Error($"{moduleName} Redis connection drop, Initiate retry every {RETRY_INTERVAL}ms");
                 }
-                _queue.Enqueue(new RedisInstance<KeyDTO, ValueDTO> { Key = key, Value = value, TTL = ttl });
+                // Cache stop functioning ashort while only yield minimal performance downgrade <- request db.
+                // we wont expect redis connection to drop (else) we (human technician) need to intervent anyway
+                if(_queue.Count <  MaxRetryCount)
+                    _queue.Enqueue(new RedisInstance<KeyDTO, ValueDTO> { Key = key, Value = value, TTL = ttl });
                 await _semaphore.WaitAsync(ct);
                 try
                 {
@@ -102,26 +107,43 @@ namespace Shared.Infrastructure.Redis.Core.Write.Extend
 
         public async Task RetryAsync(CancellationToken ct = default)
         {
-            var count = 0;
+            var count = 0; 
+            var moduleName = Assembly.GetEntryAssembly()?.GetName().Name ?? ""; // if missing can leave blank, and opt for traceId
+
             // we add the retry number later
-            while (_isSchedulerRun || _queue.IsEmpty || count == MaxRetryCount)
+            using (LogContext.PushProperty("TraceId", new TraceId(
+                    issuerId: _moduleMetaData.IssuerId,
+                    issuerType: _moduleMetaData.IssuerType)
+                ))
             {
-                await _semaphore.WaitAsync(ct);
-                try
+                while (_isSchedulerRun && !_queue.IsEmpty && count <= MaxRetryCount)
                 {
-                    if( _queue.TryDequeue(out var redisInstance))
-                        await this.EnqueueAsync(redisInstance.Key, redisInstance.Value, redisInstance.TTL, ct);
-                    else
-                        _isSchedulerRun = false;
-                    count++;
+                    await _semaphore.WaitAsync(ct);
+                    try
+                    {
+                        _logger.Warning("{Module}: Attempt retry: {RetryCount}/{MaxRetry}", moduleName, count + 1, MaxRetryCount);
+
+                        this.AttemptHeal();
+                        if(this.IsConnectionHealthy() &&  _queue.TryDequeue(out var redisInstance))
+                            await this.EnqueueAsync(redisInstance.Key, redisInstance.Value, redisInstance.TTL, ct);
+                        else
+                            _isSchedulerRun = false;
+                        count++;
+                    }
+                    finally
+                    {
+                        _semaphore.Release();
+                    }
+                    await Task.Delay(RETRY_INTERVAL, ct);
                 }
-                finally
+                if(count >  MaxRetryCount)
                 {
-                    _semaphore.Release();
+                    _logger.Warning("{Module}: Redis not recoverable after {MaxRetryCount} attempts. {Remaining} items remain unprocessed. Attempt Escalation.",moduleName, _queue.Count);
+                    await _redisHealingEscalationCB();
+                    return;
                 }
-                await Task.Delay(RETRY_INTERVAL, ct);
+                _logger.Information("{Module}: Retry Success: Redis recovered after {Attempts} attempts. Queue flushed.", moduleName, count);
             }
-            await _redisHealingEscalationCB();
         }
     }
 }

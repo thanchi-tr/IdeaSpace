@@ -20,13 +20,26 @@ namespace Shared.Infrastructure.Redis.Core.Write
     public abstract class RedisWriter<KeyDTO, ValueDTO> : IWrite<KeyDTO, ValueDTO>
         where KeyDTO: IRedisSerialise
     {
-        private readonly IDatabase _db;
+        private IDatabase _db {get; set;}
+        private  IRedisConnectionManger _conn { get; set; }
         JsonSerializerOptions _jsonOptions;
 
         public RedisWriter(IRedisConnectionManger conn, JsonSerializerOptions jsonOptions)
         {
+            _conn = conn;
             _db = conn.GetDatabase(-1);
             _jsonOptions = jsonOptions;
+        }
+
+        public virtual void AttemptHeal()
+        {
+            _conn.AttemptHeal();
+            _db = _conn.GetDatabase(-1);
+        }
+
+        public virtual bool IsConnectionHealthy()
+        {
+            return _conn.IsConnectionHealthy();
         }
 
         /// <summary>
