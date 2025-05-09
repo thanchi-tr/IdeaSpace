@@ -1,11 +1,7 @@
 ﻿using Xunit;
 using StackExchange.Redis;
 using Testcontainers.Redis;
-using FluentAssertions;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System;
-using Shared.Infrastructure.Redis.Core.Write;
 using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Core.Write.Extend;
 using Moq;
@@ -14,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Shared.Infrastructure.Redis.Core;
 using Microsoft.Extensions.Options;
 using Shared.Infrastructure.Redis.Model.Config;
+using Shared.Infrastructure.Redis.Interface.Core.Redis;
+using Shared.Infrastructure.Redis.Config;
 
 namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
 {
@@ -33,14 +31,14 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
     {
         private readonly RedisContainer _container;
         private IRedisConnectionManger _conManager;
-        private RedisWriter<MockUserKey, MockUserValue> _writer;
-        
+        private IWrite<MockUserKey, MockUserValue> _writer;
+        private int _escalationCall = 0;
         public RedisWriterIntergrationTests()
         {
             _container = new RedisBuilder()
-                .WithImage("redis:7")
+                .WithImage("redis:7.2.4")
                 .WithCleanUp(true)
-                .WithName("redis-test")
+                .WithName("redis-test-{Guid.NewGuid()}")
                 .WithPortBinding(6379, true)
                 .Build();
         }
@@ -48,7 +46,7 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
         
         public async Task DisposeAsync()
         {
-            await _conManager.Dispose();
+            await _conManager.CloseAsync();
             await _container.StopAsync();
         }
 
@@ -59,23 +57,26 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
 
             var mockLogger = new Mock<ILogger>();
             var mockConfig = new Mock<IConfiguration>();
-            // Arrange
-            //var options = Options.Create(new RedisOptions
-            //{
-            //    ConnectionString = "localhost:6379", // or from testcontainers 
-            //});
-            //_conManager = new RedisConnectionManager(
-            //    mockLogger.Object,
-            //    options,
-            //    mockConfig.Object
-            //    );
-            //_writer = new RedisWriterOutBox<MockUserKey, MockUserValue>(
-            //    _conManager, 
-            //    new JsonSerializerOptions(),
-            //    mockLogger.Object,
-            //    mockConfig.Object,
-            //    () => { return Task.CompletedTask; }
-            //);
+            IOptions<RedisOptions> options = Options.Create(new RedisOptions
+            {
+                ConnectionString = _container.GetConnectionString() // or your custom value
+            });
+            var moduleData = new ModuleMetaData
+            {
+                IssuerType = Shared.Infrastructure.Observability.IssuerType.Internal,
+                IssuerId = Guid.NewGuid(),
+                RefillRate = 100,
+                Ttl = 5000
+            };
+
+            _conManager = new RedisConnectionManager(mockLogger.Object, options,mockConfig.Object, moduleData);
+            _writer = new RedisWriterOutBox<MockUserKey, MockUserValue>(
+                _conManager,
+                new JsonSerializerOptions(),
+                mockLogger.Object,
+                mockConfig.Object,
+                () => { _escalationCall++; return Task.CompletedTask; }
+                );
         }
 
     }

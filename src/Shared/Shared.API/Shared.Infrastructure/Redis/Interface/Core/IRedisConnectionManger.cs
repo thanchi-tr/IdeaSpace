@@ -9,6 +9,6 @@ namespace Shared.Infrastructure.Redis.Interface.Core
         IServer GetServer(string host, int port);
         IConnectionMultiplexer GetConnection();
 
-        Task Dispose();
+        Task CloseAsync();
     }
 }
