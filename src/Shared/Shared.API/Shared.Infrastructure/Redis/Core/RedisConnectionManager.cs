@@ -64,7 +64,7 @@ namespace Shared.Infrastructure.Redis.Core
 
         public IConnectionMultiplexer GetConnection() => _lazyConnection.Value;
 
-        public async Task Dispose()
+        public async Task CloseAsync()
         {
             if (!_disposed)
             {

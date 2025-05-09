@@ -22,7 +22,7 @@ services:
 
   # Redis service
   redis:
-    image: redis:latest
+    image: redis:7.2.4
     container_name: local-redis
     command: >
       redis-server
