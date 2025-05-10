@@ -6,7 +6,7 @@ using Shared.Infrastructure.Observability;
 using Shared.Infrastructure.Redis.Config;
 using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Model.Config;
-using Shared.Kernel.Observability.Logging;
+using Shared.Kernel.Observability.Logging.Constant;
 using StackExchange.Redis;
 using System.Diagnostics;
 using System.Reflection;
@@ -81,15 +81,19 @@ namespace Shared.Infrastructure.Redis.Core
             }
         }
 
-        public bool IsConnectionHealthy() => _lazyConnection.IsValueCreated && _lazyConnection.Value.IsConnected;
+        public bool IsConnectionHealthy() => (!this._disposed) &&_lazyConnection.IsValueCreated && _lazyConnection.Value.IsConnected;
 
         public void AttemptHeal()
         {
-            if (_lazyConnection.IsValueCreated && !_lazyConnection.Value.IsConnected)
+            if ((!this._disposed) &&  
+                _lazyConnection.IsValueCreated && 
+                !_lazyConnection.Value.IsConnected)
             {
-                _lazyConnection.Value.Dispose();
-                _lazyConnection = new Lazy<ConnectionMultiplexer>(deferConnect);
+                return;
             }
+            _lazyConnection.Value.Dispose();
+            _lazyConnection = new Lazy<ConnectionMultiplexer>(deferConnect);
+            this._disposed = false;
         }
     }
 }

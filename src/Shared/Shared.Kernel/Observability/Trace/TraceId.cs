@@ -4,13 +4,15 @@ namespace Shared.Infrastructure.Observability
 {
     public class TraceId
     {
-        
-
         public IssuerType IssuerType { get; init; }
         public Guid IssuerId { get; init; } 
-        public DateTime Timestamp { get; init; }
+        public DateTime Timestamp { get; private set; }
+
+
         public override string ToString()
                 => $"{IssuerType}:{IssuerId}:{Timestamp:O}";
+
+
         public TraceId(Guid issuerId, int issuerType)
         {
             IssuerId = issuerId;
@@ -33,6 +35,11 @@ namespace Shared.Infrastructure.Observability
             IssuerType = issuerType;
             IssuerId = issuerId;
             Timestamp = timestamp;
+        }
+
+        public void Refresh()
+        {
+            this.Timestamp = DateTime.Now;
         }
 
         /// <summary>

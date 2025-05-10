@@ -33,5 +33,9 @@
   <ItemGroup>
     <Folder Include="Util\Mapper\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared.Messaging\Shared.Messaging.csproj" />
+  </ItemGroup>
 <!-- copy the central JSON into each consumer’s output folder -->
 </Project>

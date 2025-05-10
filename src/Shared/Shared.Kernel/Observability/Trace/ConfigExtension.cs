@@ -2,7 +2,7 @@
 
 namespace Shared.Infrastructure.Observability
 {
-    public static class ExtractTraceIdFromConfig
+    public static class ConfigExtension
     {
         /// <summary>
         /// Expect to be reuse accors module extensively,

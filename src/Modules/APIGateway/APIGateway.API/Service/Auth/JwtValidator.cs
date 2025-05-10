@@ -7,6 +7,7 @@ using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Interface.Core.Redis;
 using Shared.Infrastructure.Redis.Model.DTO.Key;
 using Shared.Kernel.Observability.Logging;
+using Shared.Kernel.Observability.Logging.Constant;
 using Shared.Kernel.Util.Jwt;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
