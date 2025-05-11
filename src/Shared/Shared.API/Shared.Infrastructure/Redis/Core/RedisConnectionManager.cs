@@ -20,6 +20,7 @@ namespace Shared.Infrastructure.Redis.Core
         private Lazy<ConnectionMultiplexer> _lazyConnection { get; set; }
         private bool _disposed;
         private readonly Func<ConnectionMultiplexer> deferConnect;
+        private string connectionPath;
         public RedisConnectionManager(
             ILogger logger, 
             IOptions<RedisOptions> options,
@@ -29,9 +30,12 @@ namespace Shared.Infrastructure.Redis.Core
             _logger = logger.ForContext("Type", LoggerType.ModuleLog);
             var config = options.Value;
             _moduleMetaData = moduleMeta;
+            connectionPath = config.ConnectionString;
             deferConnect = () =>
             {
-                var configuration = ConfigurationOptions.Parse(config.ConnectionString);
+                
+                var configuration = ConfigurationOptions.Parse(connectionPath);
+                //configuration.ConnectionString = connectionPath;
                 configuration.AbortOnConnectFail = config.AbortOnConnectionFail;
                 configuration.ConnectRetry = config.ConnectRetry;
                 configuration.ConnectTimeout = 5000;
@@ -83,17 +87,23 @@ namespace Shared.Infrastructure.Redis.Core
 
         public bool IsConnectionHealthy() => (!this._disposed) &&_lazyConnection.IsValueCreated && _lazyConnection.Value.IsConnected;
 
-        public void AttemptHeal()
+        public async void AttemptHeal()
         {
-            if ((!this._disposed) &&  
-                _lazyConnection.IsValueCreated && 
-                !_lazyConnection.Value.IsConnected)
-            {
-                return;
-            }
+            //await this.CloseAsync();
+            //if ((!this._disposed) &&  
+            //    _lazyConnection.IsValueCreated && 
+            //    !_lazyConnection.Value.IsConnected)
+            //{
+            //    return;
+            //}
             _lazyConnection.Value.Dispose();
             _lazyConnection = new Lazy<ConnectionMultiplexer>(deferConnect);
             this._disposed = false;
+        }
+
+        public void HotSwapConnection(string newConnectionPath)
+        {
+            connectionPath = newConnectionPath;
         }
     }
 }

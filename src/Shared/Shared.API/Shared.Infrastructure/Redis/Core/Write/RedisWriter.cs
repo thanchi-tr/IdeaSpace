@@ -1,6 +1,7 @@
 ﻿using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Interface.Core.Redis;
 using Shared.Infrastructure.Redis.Interface.Extension.Operation;
+using Shared.Kernel.Interface.Health;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -72,6 +73,11 @@ namespace Shared.Infrastructure.Redis.Core.Write
             var hashEntries = value.ToHashEntries();
             await _db.HashSetAsync(redisKey, hashEntries, CommandFlags.PreferMaster);
             await _db.KeyExpireAsync(redisKey, ttl);
+        }
+
+        public void HotSwapConnection(string newConnectionPath)
+        {
+            _conn.HotSwapConnection(newConnectionPath);
         }
     }
 }

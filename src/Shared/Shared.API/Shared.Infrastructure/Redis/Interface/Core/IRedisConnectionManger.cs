@@ -1,8 +1,9 @@
-﻿using StackExchange.Redis;
+﻿using Shared.Kernel.Interface.Health;
+using StackExchange.Redis;
 
 namespace Shared.Infrastructure.Redis.Interface.Core
 {
-    public interface IRedisConnectionManger : ISelfHeal
+    public interface IRedisConnectionManger : ISelfHeal, IHotSwapConnectionPath
     {
         IDatabase GetDatabase(int db);
         ISubscriber GetSubscriber();
