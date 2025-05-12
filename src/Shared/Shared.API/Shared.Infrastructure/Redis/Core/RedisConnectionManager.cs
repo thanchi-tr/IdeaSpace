@@ -87,7 +87,7 @@ namespace Shared.Infrastructure.Redis.Core
 
         public bool IsConnectionHealthy() => (!this._disposed) &&_lazyConnection.IsValueCreated && _lazyConnection.Value.IsConnected;
 
-        public async void AttemptHeal()
+        public void AttemptHeal()
         {
             //await this.CloseAsync();
             //if ((!this._disposed) &&  

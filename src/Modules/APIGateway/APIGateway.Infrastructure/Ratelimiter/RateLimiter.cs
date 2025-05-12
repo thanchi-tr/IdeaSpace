@@ -7,11 +7,8 @@ using Shared.Infrastructure.Constant;
 using Shared.Infrastructure.Observability;
 using Shared.Infrastructure.Redis.Config;
 using Shared.Infrastructure.Redis.Interface.Core.Redis;
-using Shared.Infrastructure.Redis.Model.DTO;
 using Shared.Infrastructure.Redis.Model.DTO.Key;
 using Shared.Kernel.Observability.Logging.Constant;
-using StackExchange.Redis;
-using System.Security.Authentication.ExtendedProtection;
 
 namespace APIGateway.Infrastructure.Ratelimiter
 {

@@ -13,6 +13,12 @@ using System.Reflection;
 using Shared.Infrastructure.Redis.Interface.Extension.Recovery;
 using Serilog.Sinks.TestCorrelator;
 using Serilog.Events;
+using Shared.Infrastructure.Observability;
+using Shared.Infrastructure.Redis.Interface.Channel;
+using Shared.Infrastructure.Redis.Model;
+using System.Threading.Channels;
+using Microsoft.Extensions.DependencyInjection;
+using Shared.Infrastructure.Redis.Core.Extension.Channel;
 
 namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
 {
@@ -29,6 +35,7 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
         private int _escalationCall = 0;
         private int maxRetry ;
         private bool isOutTage = false;
+        private TraceId _traceId =  new TraceId(Guid.NewGuid(), IssuerType.Internal.GetHashCode());
         public RedisWriterIntergrationTests()
         {
             _container = new RedisBuilder()
@@ -50,7 +57,7 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
         {
             // start the test container
             await _container.StartAsync();
-
+            var services = new ServiceCollection();
             mockLogger = new LoggerConfiguration()
                 .WriteTo.TestCorrelator()
                 .Enrich.FromLogContext()
@@ -66,7 +73,7 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 ConnectionString = _container.GetConnectionString() // or your custom value
             });
             maxRetry = configuration
-                .GetSection("AppMetaData:ModulesMDatas:Redis:MaxRetry")
+                .GetSection("AppMetaData:ModulesMDatas:Redis:MaxRetryCount")
                 .Get<int>();
             var moduleData = new ModuleMetaData
             {
@@ -75,7 +82,17 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 RefillRate = 100,
                 Ttl = 5000
             };
-
+            var mockOutboxChannel = new DeduplicatedChannel<RedisInstance<MockUserKey, MockUserValue>, MockUserKey, MockUserValue>(
+            Channel.CreateBounded<RedisInstance<MockUserKey, MockUserValue>>(
+                new BoundedChannelOptions(300)
+                {
+                    FullMode = BoundedChannelFullMode.Wait,
+                    SingleReader = true,
+                    SingleWriter = false
+                }
+            ));
+            services.AddSingleton<IChannel<RedisInstance<MockUserKey, MockUserValue>, MockUserKey, MockUserValue>>(mockOutboxChannel);
+            var provider = services.BuildServiceProvider();
             _conManager = new RedisConnectionManager(mockLogger, options, configuration, moduleData);
             _writer = new RedisWriterOutBox<MockUserKey, MockUserValue>(
                 _conManager,
@@ -84,7 +101,9 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 configuration,
                 () => { 
                     _escalationCall+=1; 
-                    return Task.CompletedTask; }
+                    return Task.CompletedTask; },
+                provider,
+                _traceId
                 );
             _writerWithOutTageFlag = new RedisWriterOutBox<MockUserKey, MockUserValue>(
                 _conManager,
@@ -95,7 +114,9 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                     isOutTage = true;
                     _escalationCall += 1;
                     return Task.CompletedTask;
-                }
+                },
+                provider,
+                _traceId
                 );
         }
 
@@ -104,26 +125,18 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
         public async Task RedisWriteShouldBeReadable()
         {
             // Arrange
-            var userKey = new MockUserKey
-            {
-                UserKey = "key"
-            };
-            var searchKey = new MockUserKey
-            {
-                UserKey = "key"
-            };
-            var userValue = new MockUserValue
-            {
-                Value = "message"
-            };
+            var userKey = new MockUserKey{ UserKey = "key"};
+            var searchKey = new MockUserKey{UserKey = "key"};
+            var userValue = new MockUserValue{Value = "message"};
             var mockTtl = 1000;
             var openConnection = _conManager.GetDatabase(0); // probably same db
             var ct = new CancellationTokenSource();
+            
             // Act
             using (TestCorrelator.CreateContext())
             {
 
-                await _writer.EnqueueAsync(userKey, userValue, TimeSpan.FromSeconds(mockTtl), ct.Token);
+                await _writer.EnqueueAsync(_traceId, userKey, userValue, TimeSpan.FromSeconds(mockTtl), ct.Token);
                 var read = await openConnection.StringGetAsync(searchKey.ToRedisKey());
                 var events = TestCorrelator.GetLogEventsFromCurrentContext().ToList();
                 // Assert
@@ -161,8 +174,9 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
             // Act
             using (TestCorrelator.CreateContext())
             {
-               
-                await _writer.EnqueueAsync(userKey, userValue, ttl, ct.Token);
+                await _writer.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
+                // since self healing is an async task, we must give it enough time
+                await Task.Delay(maxRetry * 140);
 
                 _conManager.AttemptHeal();
                 openConnection = _conManager.GetDatabase(-1);
@@ -210,8 +224,8 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                     var newConnection = _container.GetConnectionString();
                     _writer.HotSwapConnection(newConnection); // simulate worker call Hotswap
                 });
-                await _writer.EnqueueAsync(userKey, userValue, ttl, ct.Token);
-                await Task.Delay(maxRetry * 140);
+                await _writer.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
+                await Task.Delay(maxRetry * 120);
 
                 var events = TestCorrelator.GetLogEventsFromCurrentContext().ToList();
                 var lastMessageObj = events.LastOrDefault();
@@ -224,7 +238,8 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 }
                 try
                 {
-                    _conManager.HotSwapConnection(_container.GetConnectionString());
+                    var newPath = _container.GetConnectionString();
+                    _conManager.HotSwapConnection(newPath);
                     _conManager.AttemptHeal();
                     var openConnection = _conManager.GetDatabase(-1); // probably same db
                     var read = await openConnection.StringGetAsync(searchKey.ToRedisKey());
@@ -243,7 +258,6 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 
             }
         }
-
 
         [Fact(DisplayName ="Multi thread that try to write (same key) during an outage should not create duplicated write.")]
         public async Task MultithreadDataShouldNotLostDuringOutageWithDuplicatedKey()
@@ -275,17 +289,18 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 var backgroundTask = Task.Run(async () =>
                 {
                     await Task.Delay(maxRetry * 50);
-                    await _writerWithOutTageFlag.EnqueueAsync(userKey, userValue, ttl, ct.Token);
+                    await _writerWithOutTageFlag.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
                 });
 
-                await _writerWithOutTageFlag.EnqueueAsync(userKey, userValue, ttl, ct.Token);
+                await _writerWithOutTageFlag.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
 
-                // manually wait 
-                await Task.Run(
-                    async () =>
-                    {
-                        await Task.Delay(maxRetry * 160 + 1000);
-                    });
+                var counter = 0;
+                while (!isOutTage || counter > 600)
+                {
+
+                    counter++;
+                    await Task.Delay(200);
+                }
                 var events = TestCorrelator.GetLogEventsFromCurrentContext().ToList();
                 var lastMessageObj = events.LastOrDefault();
                 var result = _writerWithOutTageFlag.IsConnectionHealthy();
@@ -341,18 +356,19 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 var backgroundTask = Task.Run(async () =>
                 {
                     await Task.Delay(maxRetry * 50);
-                    await _writerWithOutTageFlag.EnqueueAsync(userKey2, userValue, ttl, ct.Token);
+                    await _writerWithOutTageFlag.EnqueueAsync(_traceId,userKey2, userValue, ttl, ct.Token);
                 });
 
-                await _writerWithOutTageFlag.EnqueueAsync(userKey, userValue, ttl, ct.Token);
+                await _writerWithOutTageFlag.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
 
                 // manually wait 
-                await Task.Run(
-                    async () =>
-                    {
-                        await Task.Delay(maxRetry * 150);
-                        isOutTage = true; // TTL <- if it is not call, then automatically shut down after ttl
-                    });
+                var counter = 0;
+                while(!isOutTage || counter > 600)
+                {
+
+                    counter++;
+                    await Task.Delay(200);
+                }
                 var events = TestCorrelator.GetLogEventsFromCurrentContext().ToList();
                 var lastMessageObj = events.LastOrDefault();
                 long? outBoxCount = null;
@@ -398,8 +414,15 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
             // Act
             using (TestCorrelator.CreateContext())
             {
-                await _writer.EnqueueAsync(userKey, userValue, ttl, ct.Token);
-                await Task.Delay(maxRetry * 150); // wait for thread handle outage conclude catastrophic
+                await _writerWithOutTageFlag.EnqueueAsync(_traceId, userKey, userValue, ttl, ct.Token);
+                // manually wait 
+                var counter = 0;
+                while (!isOutTage || counter > 600)
+                {
+
+                    counter++;
+                    await Task.Delay(200);
+                }
                 var events = TestCorrelator.GetLogEventsFromCurrentContext().ToList();
                 var lastMessageObj = events.LastOrDefault();
                 long? outBoxCount = null;
