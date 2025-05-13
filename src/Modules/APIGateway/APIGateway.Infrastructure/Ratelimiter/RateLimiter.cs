@@ -23,8 +23,7 @@ namespace APIGateway.Infrastructure.Ratelimiter
         private readonly int DefaultResetMin;
         public RateLimiter(
             IConfiguration configuration,
-            IRead<RedisGatewayRateLimitBucketKey,
-            RediRateBucket> reader,
+            IRead<RedisGatewayRateLimitBucketKey, RediRateBucket> reader,
             IWrite<RedisGatewayRateLimitBucketKey, RediRateBucket> writer,
             ILogger auditLog)
         {

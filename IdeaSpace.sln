@@ -173,6 +173,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModuleDocumentaion", "Modul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdeaSpace.Share.Infrastructure.Redis", "tests\Shared\IdeaSpace.Share.Infrastructure.Redis\IdeaSpace.Share.Infrastructure.Redis.csproj", "{960004D0-2939-48BD-9D92-F1954F4A4397}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "certs", "certs", "{897CBA72-8E3E-4804-9AF7-AAD34BE6D17C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
