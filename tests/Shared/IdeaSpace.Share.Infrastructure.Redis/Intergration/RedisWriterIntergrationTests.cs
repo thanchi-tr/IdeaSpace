@@ -440,6 +440,5 @@ namespace IdeaSpace.Share.Infrastructure.Redis.Intergration
                 Assert.Equal(_escalationCall, 1);
             }
         }
-
     }
 }

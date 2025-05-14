@@ -8,7 +8,6 @@ using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Model.Config;
 using Shared.Kernel.Observability.Logging.Constant;
 using StackExchange.Redis;
-using System.Diagnostics;
 using System.Reflection;
 namespace Shared.Infrastructure.Redis.Core
 {

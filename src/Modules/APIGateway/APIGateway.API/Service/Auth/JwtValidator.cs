@@ -3,7 +3,6 @@ using APIGateway.API.Model.DTO;
 using Microsoft.IdentityModel.Tokens;
 using Serilog.Context;
 using Shared.Infrastructure.Observability;
-using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Infrastructure.Redis.Interface.Core.Redis;
 using Shared.Infrastructure.Redis.Model.DTO.Key;
 using Shared.Kernel.Observability.Logging;
