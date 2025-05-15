@@ -1,127 +1,251 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿ using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
-using Serilog.Context;
 using Shared.Infrastructure.Observability;
+using Shared.Infrastructure.Redis.Config;
 using Shared.Infrastructure.Redis.Interface.Core;
-using Shared.Infrastructure.Redis.Interface.Extension.Operation;
 using Shared.Infrastructure.Redis.Interface.Extension.Recovery;
 using Shared.Infrastructure.Redis.Model;
-using Shared.Kernel.GeneralConfig;
+using Shared.Kernel.Interface.Health;
+using Shared.Kernel.Observability.Logging.Constant;
 using Shared.Kernel.Observability.Logging;
-using StackExchange.Redis;
-using System.Collections.Concurrent;
-using System.Reflection;
 using System.Text.Json;
+using System.Threading.Channels;
+using StackExchange.Redis;
+using Shared.Infrastructure.Redis.Interface.Extension.Operation;
+using Serilog.Context;
+using System.Collections.Concurrent;
+using Shared.Infrastructure.Redis.Interface.Channel;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Reflection;
 
 namespace Shared.Infrastructure.Redis.Core.Write.Extend
 {
-    /// <summary>
-    /// This is an singleton that will live as long as the application.
-    /// 
-    /// </summary>
-    /// <typeparam name="KeyDTO"></typeparam>
-    /// <typeparam name="ValueDTO"></typeparam>
-    public class RedisWriterOutBox<KeyDTO, ValueDTO> : RedisWriter<KeyDTO, ValueDTO>, IRedisWriteOutBox<KeyDTO, ValueDTO>
+    public class RedisWriterOutBox<KeyDTO, ValueDTO>
+        : RedisWriter<KeyDTO, ValueDTO>,
+        IRedisWriteOutBox<KeyDTO, ValueDTO>,
+        IEnrichHealthCheck,
+        IRecoveryHandler
         where KeyDTO : IRedisSerialise
     {
-        private readonly ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>> _queue;
-        private bool _isSchedulerRun = false;
+        /// Constant
+        public const int INACTIVE = 0;
+        public const int ACTIVE = 1;
+        public const int SelfHealTriggerModulo = 0;
 
-
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private readonly ConcurrentDictionary<Guid, byte> _seen = new();
+        private IChannel<RedisInstance<KeyDTO, ValueDTO>, KeyDTO, ValueDTO> _outboxChannel;
         private readonly ILogger _logger;
-        private readonly ModuleMetaData _moduleMetaData;
-        public readonly int RETRY_INTERVAL = 100;
-        private readonly int MaxRetryCount;// default total time 30s 
-        private readonly Func<Task> _redisHealingEscalationCB;
+        private readonly Func<Task> _outageEscalationCB;
+        private long _queueCount = 0;
+
+        private volatile bool _isOutage;
+        public bool IsOutage {  get { return _isOutage; } }
+        /// Config:
+        private int RetryInterval { get; init; }
+        private int MaxRetryCount { get; init; }
+        private int SelfHealInterval { get; init; }
+
+        /// Limit the logging rate to prevent log pollutant
+        public int OutBoxLogInterval { get; set; }
+
+
+        /// Operation Flag
+        /// Signal that the processing out box channel is occur
+        private int _isWorkerActive = INACTIVE;
+
         public RedisWriterOutBox(
-            IRedisConnectionManger conn, 
-            JsonSerializerOptions jsonOptions, 
+            IRedisConnectionManger conn,
+            JsonSerializerOptions jsonOptions,
             ILogger logger,
             IConfiguration config,
-            Func<Task>  escalationCB
+            Func<Task> escalationCB,
+            IServiceProvider provider,
+            TraceId traceId
             ) : base(conn, jsonOptions)
         {
-            _queue = new ConcurrentQueue<RedisInstance<KeyDTO, ValueDTO>>();
-            // This failure point will be report in module event
-            _logger = logger.ForContext("Type", LoggerType.ModuleLog);
-            _moduleMetaData = config
-                .GetSection("AppMetaData:ModulesMDatas:Redis")
-                .Get<ModuleMetaData>() ?? new ModuleMetaData { IssuerId = Guid.NewGuid(), IssuerType = Observability.IssuerType.Internal };
-            var retryCount = config
-                .GetSection("AppMetaData:ModulesMDatas:RedisConfig:MaxRetry")
-                .Get<int>();
-            MaxRetryCount = retryCount == 0 
-                ? 300 // default to 30s total attempt wait for revolving
-                : retryCount;
-            _redisHealingEscalationCB = escalationCB;
+            var generalConfig = config.GetSection("AppMetaData:ModulesMDatas:Redis")
+                    .Get<RedisConfig>();
+            var CatastrophicConfig = config.GetSection("AppMetaData:ModulesMDatas:Redis")
+                    .Get<CatastrophicHandlerConfig>();
+            OutBoxLogInterval = config.GetSection("AppMetaData:ModulesMDatas:Redis")
+                    .Get<RedisLog>()!.OutBoxLogInterval;
+            RetryInterval = CatastrophicConfig.RetryInterval;
+            MaxRetryCount = 5;// CatastrophicConfig.MaxRetryCount;
+            SelfHealInterval = CatastrophicConfig.SelfHealInterval;
+            // instantiate the register outbox reader and writer
+            _outageEscalationCB = escalationCB;
+            _logger = logger.InjectLoggerType(LoggerType.ModuleLog);
+
+            // get the registed channel type
+            // since the WriterOutBox is a singleton its channel must match scope
+            _outboxChannel = provider.GetRequiredService<IChannel<RedisInstance<KeyDTO, ValueDTO>, KeyDTO, ValueDTO>>();
         }
 
-        public async Task EnqueueAsync(KeyDTO key, ValueDTO value, TimeSpan ttl, CancellationToken ct = default)
+        /// <summary>
+        /// Intent usage:
+        ///     1) Allow module to check its service health
+        ///     2) contribute to decision to opt for alternative
+        /// </summary>
+        /// <param name="traceid">Empty - this writer have its own worker process who trigger log</param>
+        /// <param name="context"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<HealthCheckResult> CheckHealthAsync(TraceId traceid, HealthCheckContext context, CancellationToken cancellationToken = default)
         {
+            if (this.IsConnectionHealthy())
+            {
+                return Task.FromResult(
+                    HealthCheckResult.Healthy("Redis is connected", new Dictionary<string, object>
+                    {
+                        ["IsSchedulerRunning"] = _isWorkerActive == ACTIVE ? true : false,
+                        ["OutboxQueueCount"] = Interlocked.Read(ref _queueCount),
+                        ["RetryBackoff"] = RetryInterval,
+                        ["MaxRetryCount"] = MaxRetryCount,
+                        ["SelfHealModulo"] = SelfHealInterval
+                    })
+                );
+            }
+            return Task.FromResult(
+                HealthCheckResult.Unhealthy("Redis connection is unavailable")
+            );
+        }
+
+        /// <summary>
+        /// Resolve in 2 path:
+        ///     1- connection is clear, write to redis
+        ///     2- connection not found/ redis down : send to outbox wait for issue resovle.
+        /// </summary>
+        /// <param name="traceId"> Allow inject module traceId</param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="ttl"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        /// <exception cref="RedisConnectionException"></exception>
+        public async Task EnqueueAsync(TraceId traceId, KeyDTO key, ValueDTO value, TimeSpan ttl, CancellationToken ct = default)
+        {
+            if ((IsOutage))
+            {
+                return;
+            }
             try
             {
-                await _semaphore.WaitAsync(ct);
-                try
+                if (!IsConnectionHealthy())
+                    throw new RedisConnectionException(ConnectionFailureType.ConnectionDisposed, "Connect is not reachable.");
+
+                if (value is IExtractHashEntries extractable)
                 {
-                    if(value is IExtractHashEntries extractable)
-                    {
-                        await this.WriteHashAsync(key, extractable, ttl, ct);
-                    }
-                    await this.WriteAsync(key, value, ttl, ct);
+                    await this.WriteHashAsync(key, extractable, ttl, ct);
                 }
-                finally
+                else await this.WriteAsync(key, value, ttl, ct);
+
+            }
+            catch (Exception ex)
+            {
+                traceId.Refresh();
+                using (LogContext.PushProperty("TraceId", traceId))
                 {
-                    _semaphore.Release();
+                    _logger.Warning("RedisWriterOutBox: connection drop, Initiate retry every {RetryInterval}ms, {Exception}", RetryInterval, ex);
+                }
+
+                if( _outboxChannel.Writer.TryWrite(new RedisInstance<KeyDTO, ValueDTO> { Key = key, Value = value, TTL = ttl }))
+                {
+                    Interlocked.Increment(ref _queueCount);
                 }
             }
-            catch (RedisConnectionException ex)
+            if(Interlocked.Read(ref _queueCount) == INACTIVE || Interlocked.CompareExchange(ref _isWorkerActive, 1, 0) == ACTIVE)
             {
-                using(LogContext.PushProperty("TraceId", new TraceId
+                return;
+            }
+            _ = RetryAsync(traceId);
+        }
+
+        public async Task RetryAsync(TraceId traceId, CancellationToken ct = default)
+        {
+            if (IsOutage)
+                return;
+
+            var count = 0;
+
+            var moduleName = Assembly.GetEntryAssembly()?.GetName().Name ?? ""; // if missing can leave blank, and opt for traceId
+
+            traceId.Refresh();
+            using (LogContext.PushProperty("TraceId", traceId))
+            {
+                while( !IsOutage &&
+                    await _outboxChannel.Reader.WaitToReadAsync(ct) &&
+                    count <= MaxRetryCount)
                 {
-                    IssuerType = _moduleMetaData.IssuerType,
-                    IssuerId = _moduleMetaData.IssuerId,
-                    Timestamp = DateTime.UtcNow,
-                }))
-                {
-                    _logger.Error($"{Assembly.GetEntryAssembly().GetName().Name} Redis connection drop, Initiate retry every {RETRY_INTERVAL}ms");
+                    if (!IsConnectionHealthy() && count % SelfHealInterval == SelfHealTriggerModulo)
+                    {
+                        _logger.Information("{Module}: Attempt retry: {RetryCount}/{MaxRetry}", moduleName, count + 1, MaxRetryCount);
+                        this.AttemptHeal();
+                    }
+
+                    if(IsConnectionHealthy())
+                    {
+                        await foreach (var msg in _outboxChannel.Reader.ReadAllAsync(ct))
+                        {
+                            Interlocked.Decrement(ref _queueCount);
+                            // Handle retry logic here
+                            await AttemptProcessOutboxMsg(msg, ct);
+                        }
+                    }
+                    
+                    await Task.Delay(RetryInterval, ct);
+                    count++;
                 }
-                _queue.Enqueue(new RedisInstance<KeyDTO, ValueDTO> { Key = key, Value = value, TTL = ttl });
-                await _semaphore.WaitAsync(ct);
-                try
+                Interlocked.Exchange(ref _isWorkerActive, INACTIVE);
+                if (count > MaxRetryCount)
                 {
-                    if (!_isSchedulerRun)
-                        _isSchedulerRun = true;
+                    _logger.Warning("{Module}: Redis not recoverable after {MaxRetryCount} attempts. {outBoxCount} items remain unprocessed. Attempt Escalation.",
+                        moduleName, count, Interlocked.Read(ref _queueCount));
+                    _isOutage = true;
+                    await _outageEscalationCB();
+                    return;
                 }
-                finally
-                {
-                    _semaphore.Release();
-                }
+                _logger.Information("{Module}: Retry Success: Redis recovered after {Attempts} attempts. Queue flushed.", moduleName, count, _queueCount);
+
             }
         }
 
-        public async Task RetryAsync(CancellationToken ct = default)
+        /// Private Helper:
+        private async Task AttemptProcessOutboxMsg(RedisInstance<KeyDTO, ValueDTO> msg, CancellationToken ct = default)
         {
-            var count = 0;
-            // we add the retry number later
-            while (_isSchedulerRun || _queue.IsEmpty || count == MaxRetryCount)
+            if(!IsConnectionHealthy())
             {
-                await _semaphore.WaitAsync(ct);
-                try
-                {
-                    if( _queue.TryDequeue(out var redisInstance))
-                        await this.EnqueueAsync(redisInstance.Key, redisInstance.Value, redisInstance.TTL, ct);
-                    else
-                        _isSchedulerRun = false;
-                    count++;
-                }
-                finally
-                {
-                    _semaphore.Release();
-                }
-                await Task.Delay(RETRY_INTERVAL, ct);
+                if(_outboxChannel.Writer.TryWrite(msg))
+                    Interlocked.Increment(ref _queueCount);
+                return;
             }
-            await _redisHealingEscalationCB();
+            try 
+            { 
+                if(msg.Key is IExtractHashEntries extractable)
+                {
+                    await this.WriteHashAsync(msg.Key, extractable, msg.TTL, ct);
+                }
+                else await this.WriteAsync(msg.Key, msg.Value, msg.TTL, ct);
+
+               
+            }
+            catch (Exception ex)
+            {
+                // Log is still wrapped under context of Retry block
+                _logger.Warning("Issue raise after connection revised");
+                if(_outboxChannel.Writer.TryWrite(msg))
+                    Interlocked.Increment(ref _queueCount);
+                return ;
+            }
+
+            return ;
+        }
+
+        public void OutageResovle()
+        {
+            _isOutage = false;
+
         }
     }
 }

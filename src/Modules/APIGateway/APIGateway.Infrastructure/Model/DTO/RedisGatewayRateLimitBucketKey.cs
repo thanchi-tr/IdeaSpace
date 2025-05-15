@@ -9,10 +9,10 @@ namespace Shared.Infrastructure.Redis.Model.DTO.Key
     public class RedisGatewayRateLimitBucketKey : IRedisSerialise
     {
         public Guid UserId { get; set; }
-
+        public Guid ModuleId { get; set; }
         public RedisKey ToRedisKey()
         {
-            return new RedisKey($"ApiGateWay:RateLimit:{UserId}");
+            return new RedisKey($"ApiGateWay:RateLimit:{UserId}:{ModuleId}");
         }
     }
 }

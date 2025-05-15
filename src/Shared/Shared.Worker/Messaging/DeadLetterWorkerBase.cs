@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Serilog;
+using Shared.Kernel.Observability.Logging.Constant;
 
 namespace Shared.Worker.Messaging
 {
@@ -22,7 +23,7 @@ namespace Shared.Worker.Messaging
     {
         private readonly IChannel _channel;
         private readonly string _queueName;
-        private readonly Dictionary<String,ILogger> _logger;
+        private readonly Dictionary<LoggerType,ILogger> _logger;
 
         private CancellationTokenSource? _ctoken;
         private Task? _bgTask;

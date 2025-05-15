@@ -125,3 +125,79 @@ Observability is enhanced, and abuse is traceable via audit logs.
   }
 }
 ```
+
+## 🚦 Rate Limiter Integration
+To enforce `per-user, per-module` rate limits, we implemented a token-bucket rate limiter backed by Redis.
+
+### How It Works
+
+| Aspect              | Design Detail                                                                                   |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| 🪣 **Token Bucket** | Each user-module pair has a dedicated bucket (`RemainCount`, `LastUpdatedEpoch`, `MaxCapacity`) |
+| ⚙️ **Lazy Refill**  | Token refill calculated based on elapsed time since last access — no background job needed      |
+| ⏳ **TTL Reset**     | Buckets expire after `Ttl` (e.g. 30 mins); new ones are created on demand                       |
+| 📦 **Redis Hash**   | Bucket fields stored as Redis Hash (`HashSetAsync`, `HashGetAllAsync`)                          |
+
+### Configuration
+
+Rate limiter parameters are defined in `AppMetaData.ModulesMDatas:`
+
+```
+"RateLimiter": {
+  "IssuerId": "6c2f78b9-9821-48f9-bd08-c0865a602a35",
+  "IssuerType": "0",
+  "RefillRate": 3,
+  "Ttl": 30
+}
+```
+
+### Sample DTO
+```
+public class RediRateBucket : IExtractHashEntries
+{
+    public int RemainCount { get; set; }
+    public long LastUpdatedEpoch { get; set; }
+    public int MaxCapacity { get; set; }
+
+    // Hash extraction logic omitted for brevity
+}
+
+```
+
+### Key Implementation Files
+- `RateLimiter.cs` – Main logic using Reader/Writer Redis abstraction.
+
+- `APIGateway.Infrastructure/Model/DTO/RediRateBucket.cs` – Bucket data model with serialization helpers.
+
+- `APIGateway.Infrastructure/Model/DTO/RedisGatewayRateLimitBucketKey.cs` – Redis key contract for rate limiter.
+
+- `Share.Infrastructure/Redis/Config/AppMetaData.cs` – Container: Config-driven module rate TTL + refill logic.
+
+- `Share.Infrastructure/Redis/Config/ModuleMetaData.cs` – Config-driven module rate TTL + refill logic.
+### Example Log (Audit log only)
+
+#### Access granted:
+```
+{
+  "level": "Verbose",
+  "message": "Module Access: Crud grant to 123e4567-e89b-12d3-a456-426614174000",
+  "TraceId": {
+    "IssuerType": "RateLimiter",
+    "IssuerId": "6c2f78b9-9821-48f9-bd08-c0865a602a35",
+    "Timestamp": "2025-05-08T10:03:30Z"
+  }
+}
+```
+
+#### Rate Limit Exceeded
+```
+{
+  "level": "Warning",
+  "message": "Rate limit exceeded for user 123e4567-e89b-12d3-a456-426614174000 in module Crud",
+  "TraceId": {
+    "IssuerType": "RateLimiter",
+    "IssuerId": "6c2f78b9-9821-48f9-bd08-c0865a602a35",
+    "Timestamp": "2025-05-08T10:03:35Z"
+  }
+}
+```

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.Infrastructure.Redis.Model.DTO
+namespace Shared.Infrastructure.Redis.Interface.Channel
 {
-    public class RateBucket
+    public interface IHasKey<TKey>
     {
+        TKey Key { get; }
     }
+
 }

@@ -2,6 +2,6 @@
 {
     public interface IRateLimit
     {
-        bool IsAllowRequest(string userId, string route);
+        Task<bool> IsAllowRequestAsync(string userId, Guid moduleId);
     }
 }

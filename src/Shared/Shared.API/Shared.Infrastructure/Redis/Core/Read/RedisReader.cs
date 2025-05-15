@@ -34,5 +34,14 @@ namespace Shared.Infrastructure.Redis.Core.Read
                     ? JsonSerializer.Deserialize<ValueDTO>(redisRes.ToString(), options: _jsonOptions)
                     : default;
         }
+
+        public async Task<HashEntry[]?> ReadHashAsync(KeyDTO key, CancellationToken ct = default)
+        {
+            var redisKey = key.ToRedisKey();
+            // Attempt to read the value, start with master, if not exist going to replica
+            var redisRes = await _db.HashGetAllAsync(redisKey);
+
+            return redisRes;
+        }
     }
 }

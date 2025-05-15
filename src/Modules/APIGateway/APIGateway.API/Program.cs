@@ -1,9 +1,13 @@
 
+using APIGateway.API.Config;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using RabbitMQ.Client;
 using Shared.Kernel.GeneralConfig;
 using Shared.Messaging.Interface.Contract;
+using System.Net;
 using System.Text;
 
 namespace APIGateway.API
@@ -17,7 +21,26 @@ namespace APIGateway.API
 
             // Add services to the container.
             var config = builder.Configuration;
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.Listen(IPAddress.Any, 80); // redirect only
+                serverOptions.Listen(IPAddress.Any, 443, listenOptions =>
+                {
+                    listenOptions.UseHttps("certs/devcert.pfx", "testpass");
+                });
+            });
+            builder.Services.Configure<HstsOptions>(options =>
+            {
+                options.MaxAge = TimeSpan.FromDays(365);
+                options.IncludeSubDomains = true;
+                options.Preload = true;
+            });
+            builder.Services.ConfigHttpClient(config); // set up all the client http config and polly
             builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMQ"));
+            // Add YARP reverse proxy
+            builder.Services.AddReverseProxy()
+                .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -58,7 +81,9 @@ namespace APIGateway.API
             }
 
             app.UseHttpsRedirection();
+            app.UseHsts();
 
+            app.MapReverseProxy();
             app.UseAuthorization();
 
 

@@ -6,10 +6,41 @@ namespace Shared.Infrastructure.Observability
     {
         public IssuerType IssuerType { get; init; }
         public Guid IssuerId { get; init; } 
-        public DateTime Timestamp { get; init; }
+        public DateTime Timestamp { get; private set; }
+
+
         public override string ToString()
                 => $"{IssuerType}:{IssuerId}:{Timestamp:O}";
 
+
+        public TraceId(Guid issuerId, int issuerType)
+        {
+            IssuerId = issuerId;
+
+            if (!Enum.IsDefined(typeof(IssuerType), issuerType))
+                throw new ArgumentOutOfRangeException(nameof(issuerType), "Invalid issuer type");
+
+            IssuerType = (IssuerType)issuerType;
+            Timestamp = DateTime.Now;
+        }
+        public TraceId(Guid issuerId, IssuerType issuerType)
+        {
+            IssuerId = issuerId;
+            IssuerType = issuerType;
+            Timestamp = DateTime.Now;
+        }
+
+        public TraceId(IssuerType issuerType, Guid issuerId, DateTime timestamp)
+        {
+            IssuerType = issuerType;
+            IssuerId = issuerId;
+            Timestamp = timestamp;
+        }
+
+        public void Refresh()
+        {
+            this.Timestamp = DateTime.Now;
+        }
 
         /// <summary>
         /// Attempt to deserialised the string back to readable
@@ -53,13 +84,7 @@ namespace Shared.Infrastructure.Observability
                     out var timestamp))
                 return false;
 
-            res = new TraceId
-            {
-                IssuerType = issuerType,
-                IssuerId = guid,
-                Timestamp = timestamp
-            };
-
+            res = new TraceId( issuerType, guid, timestamp);
             return true;
         }
 

@@ -55,13 +55,27 @@ cfg.ReconnectRetryPolicy  = new ExponentialRetry(5000);
 ```
 ## 🧰 RedisWriterOutBox
 
-This write-through wrapper buffers writes to Redis in case of connection drop (i.e., Redis is down but the app is still running). It retries every 100ms until Redis is reachable again.
-
+This write-through wrapper buffers writes to Redis in case of connection drop (i.e., Redis is down but the app is still running). It retries every 100ms until Redis is reachable again or a maximum retry count is exceeded.
 - Respects TTL : NOTE: at base class, we ensure infrastructure failure on fail to pass, set up using ttl to
     to eliminate silence break point
 - Is thread-safe via `SemaphoreSlim`
 - Uses a `ConcurrentQueue` as the fallback store
 - Logs failure using `ModuleLog` type with full `TraceId` context
+- Triggers escalation hook if self-healing fails.
+
+### Key Retry Enhancements
+- Retries are capped at `MaxRetryCount` (default: 300)
+- Includes `AttemptHeal()` before retrying
+-  Guarded with `MaxRetryCapacity` to prevent memory abuse
+ - Escalates via `Func<Task> escalationCB` after exhausting attempts
+
+ ### Sample Retry Logs
+(after enrich with custom data + TraceId)
+ ```
+ [Warning] Crud: Attempt retry: 1/300
+[Warning] Crud: Redis not recoverable after 300 attempts. 12 items remain unprocessed. Attempt Escalation.
+[Info] Crud: Retry Success: Redis recovered after 5 attempts. Queue flushed.
+```
 
 ### 👇 Auto-Routed Write Behavior
 | Value Type                          | Redis Write Strategy |
@@ -69,7 +83,8 @@ This write-through wrapper buffers writes to Redis in case of connection drop (i
 | Implements `IExtractHashEntries`   | `HashSetAsync(...)`   |
 | Any other DTO                      | `StringSetAsync(...)` |
 
-This logic is embedded in `EnqueueAsync()` so that upstream services don’t need to worry about Redis specifics.
+This logic is embedded in `EnqueueAsync()` so that upstream services don’t need to worry about Redis specifics. Only applicable to 
+Write operation, for read: I decide to make the code explicitly state how to retrieve so the return type is transparent.
 
 ### Sample TraceId Log
 ## 🔑 Key DTO → Redis Key Conventions
