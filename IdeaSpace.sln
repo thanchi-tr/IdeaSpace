@@ -175,6 +175,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdeaSpace.Share.Infrastruct
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "certs", "certs", "{897CBA72-8E3E-4804-9AF7-AAD34BE6D17C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndeaSpace.Modules.Crud", "tests\Modules\Crud\IndeaSpace.Modules.Crud\IndeaSpace.Modules.Crud.csproj", "{C419D177-E4CA-48F9-9FD5-AFB3BAA90441}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -337,6 +339,10 @@ Global
 		{960004D0-2939-48BD-9D92-F1954F4A4397}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960004D0-2939-48BD-9D92-F1954F4A4397}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960004D0-2939-48BD-9D92-F1954F4A4397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C419D177-E4CA-48F9-9FD5-AFB3BAA90441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C419D177-E4CA-48F9-9FD5-AFB3BAA90441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C419D177-E4CA-48F9-9FD5-AFB3BAA90441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C419D177-E4CA-48F9-9FD5-AFB3BAA90441}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -399,6 +405,7 @@ Global
 		{BE226584-613F-6D5E-F648-36C2AC72610D} = {C67CE8F3-D561-4BC4-9FC5-4BF7D2AFE7A4}
 		{C62F4F60-3BAD-4B07-81A4-B222D541AEF8} = {3805B80D-F717-476B-BF47-AC002C6ACD2C}
 		{960004D0-2939-48BD-9D92-F1954F4A4397} = {5062C494-ECDE-452E-8A0B-05AD1826831B}
+		{C419D177-E4CA-48F9-9FD5-AFB3BAA90441} = {30C8EA29-D937-4AE5-BEE8-60D142CBE1C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {161F9CD9-1D42-4863-ADED-CE4290B38439}

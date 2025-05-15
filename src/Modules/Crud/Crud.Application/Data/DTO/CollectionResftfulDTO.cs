@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using Shared.Domain.Models;
+using System.Text.RegularExpressions;
 namespace Crud.Application.Data.DTO
 {
     public class CollectionCreationResftfulDTO
@@ -10,7 +10,7 @@ namespace Crud.Application.Data.DTO
         public Guid LabelId { get; set; }
 
 
-        public class MappingProfile: Profile
+        public class MappingProfile: Profile // this is predecate due to that auto mapper is no longer free to use
         {
             public MappingProfile(HttpClient http)
             {
@@ -24,7 +24,12 @@ namespace Crud.Application.Data.DTO
             public Validator()
             {
                 RuleFor(cr => cr.Description)
-                    .NotEmpty().WithMessage("Please provide a short collection description!");
+                    .Must(input => !string.IsNullOrWhiteSpace(input) &&
+                                    !Regex.IsMatch(input, @"<[^>]+>", RegexOptions.IgnoreCase) && // ensure no xss
+                                    !Regex.IsMatch(input, @"(script|onerror|onload)\s*=", RegexOptions.IgnoreCase))
+                        .WithMessage("Attempt to perform XSS injection");
+                RuleFor(cr => cr.LabelId)
+                    .NotEmpty().WithMessage("Missing key: LabelId");
             }
         }
     }
