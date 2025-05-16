@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Crud.Application.Util;
 using FluentValidation;
 using System.Text.RegularExpressions;
 namespace Crud.Application.Data.DTO
@@ -6,7 +7,7 @@ namespace Crud.Application.Data.DTO
     public class CollectionCreationResftfulDTO
     {
         public Guid? ParentCollectionId { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public Guid LabelId { get; set; }
 
 
@@ -25,8 +26,7 @@ namespace Crud.Application.Data.DTO
             {
                 RuleFor(cr => cr.Description)
                     .Must(input => !string.IsNullOrWhiteSpace(input) &&
-                                    !Regex.IsMatch(input, @"<[^>]+>", RegexOptions.IgnoreCase) && // ensure no xss
-                                    !Regex.IsMatch(input, @"(script|onerror|onload)\s*=", RegexOptions.IgnoreCase))
+                                    !input.IsContainXss())
                         .WithMessage("Attempt to perform XSS injection")
                     .MaximumLength(300)
                         .WithMessage("Description is too long (max 300 chars)");
