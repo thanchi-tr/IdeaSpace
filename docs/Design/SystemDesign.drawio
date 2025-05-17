@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2025-05-17T13:16:45.813Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="hElxU-lozZVekVV_V9bK" version="22.1.2" type="device">
+<mxfile host="Electron" modified="2025-05-17T16:23:36.173Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.2 Chrome/114.0.5735.289 Electron/25.9.4 Safari/537.36" etag="o7ddw7FdX1hTPdXbvz2b" version="22.1.2" type="device">
   <diagram name="Page-1" id="7ynxl21J-mi2Gz97TGtv">
-    <mxGraphModel dx="4350" dy="1849" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="3223" dy="1376" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -178,7 +178,7 @@
           <mxGeometry x="-68" y="20" width="130" height="30" as="geometry" />
         </mxCell>
         <mxCell id="IdTssMJ4M_bueztje77A-69" value="" style="group" parent="1" vertex="1" connectable="0">
-          <mxGeometry x="3620" y="1050" width="3010" height="750" as="geometry" />
+          <mxGeometry x="3890" y="1164.5" width="3010" height="750" as="geometry" />
         </mxCell>
         <mxCell id="abSBbt6oqbg-fuOaKUMo-122" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;&lt;b&gt;RabitMQ Message Layer&lt;/b&gt;&lt;/font&gt;" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;" parent="IdTssMJ4M_bueztje77A-69" vertex="1">
           <mxGeometry x="30" y="-157" width="2980" height="907" as="geometry" />

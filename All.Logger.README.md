@@ -23,7 +23,7 @@ _logger = baseLogger.Split();
 Now `_logger` becomes a dictionary of typed loggers:
 
 ```
-_logger = Dictionary<string, Serilog.ILogger> {
+_logger = Dictionary<LoggerType, Serilog.ILogger> {
 	//...
 }_
 
@@ -43,13 +43,15 @@ Source:
 
 > Locate @Shared.Messaging /Observability/Logging
 ```
-public static class LoggerType
-{
-    public const string ModuleLog = "Module.Event";
-    public const string RecoveryLog = "Recovery.Event";
-    public const string SystematicLog = "Systematic.Event";
-    public const string AuditLog = "Audit";
-}
+public sealed record LoggerType(string Name)
+    {
+        public static readonly LoggerType SystematicLog = new("Systematic.Event");
+        public static readonly LoggerType ModuleLog = new ("Module.Event");
+        public static readonly LoggerType AuditLog = new("Audit");
+        public static readonly LoggerType RecoveryLog = new("Recovery.Event");
+
+        public override string ToString() => Name;
+    }
 
 ```
 
