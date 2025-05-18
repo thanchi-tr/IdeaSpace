@@ -4,7 +4,6 @@ using Shared.Domain.Constant.RabbitMQ.Type;
 using Shared.Infrastructure.Data;
 using Shared.Infrastructure.Observability;
 using Shared.Infrastructure.Redis.Core.Read;
-using Shared.Infrastructure.Redis.Interface.Channel;
 using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Kernel.Observability.Logging;
 using Shared.Kernel.Observability.Logging.Constant;
@@ -18,7 +17,7 @@ namespace Crud.Application.Interface.System
     public class Reader<KeyDTO, ORMType> : ISystemRead<ORMType, KeyDTO>
     
         where KeyDTO : IRedisSerialise
-        where ORMType : class, IHasKey<KeyDTO>
+        where ORMType : class
     {
         private RedisReader<KeyDTO, ORMType> _cache { get; set; }
         private ReadOnlyAppSqlDbContext _readonlyDb {  get; set; }
@@ -93,6 +92,11 @@ namespace Crud.Application.Interface.System
                 return target;
             }
 
+        }
+
+        public Task<IQueryable<ORMType>> GetAllAsync()
+        {
+            return Task.FromResult(_readonlyDb.Set<ORMType>().AsQueryable());
         }
     }
 }
