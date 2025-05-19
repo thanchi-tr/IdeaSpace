@@ -2,12 +2,17 @@
 using Crud.Application.Interface.System;
 using Crud.Application.Interface.Util;
 using Microsoft.EntityFrameworkCore;
+using Serilog.Context;
+using Shared.Domain.Constant.RabbitMQ.Type;
 using Shared.Domain.Models;
 using Shared.Infrastructure.Observability;
 using Shared.Infrastructure.Redis.Interface.Channel;
 using Shared.Infrastructure.Redis.Interface.Core;
 using Shared.Kernel.Observability.Logging;
 using Shared.Kernel.Observability.Logging.Constant;
+using Shared.Messaging.Constanst.Contract;
+using Shared.Messaging.Constanst.Event;
+using Shared.Messaging.Interface.Publisher;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -23,13 +28,19 @@ namespace Crud.Application.Repository
         private readonly Reader<DTOType, ORMType> _systemReader;
         private readonly Dictionary<LoggerType, Serilog.ILogger> _loggers;
         private readonly IMap _mapper; // custom mapper, response to auto mapper go subscription-base service
-        
-        public Repository(TraceId traceId, Reader<DTOType, ORMType> systemReader, Serilog.ILogger logger, IMap mapper)
+        private IMessagePublisher<BaseEvent<DataModifiedPayload<DTOType>>> _publisher;
+        public Repository(
+            TraceId traceId, 
+            Reader<DTOType, ORMType> systemReader, 
+            Serilog.ILogger logger,
+            IMessagePublisher<BaseEvent<DataModifiedPayload<DTOType>>> messagePublisher,
+            IMap mapper)
         {
             _traceId = traceId;
             _systemReader = systemReader;
             _loggers = logger.Split();
             _mapper = mapper;
+            _publisher = messagePublisher;
         }
 
         /// <summary>
@@ -76,14 +87,57 @@ namespace Crud.Application.Repository
 
         }
 
-        public Task<bool> OptimisticDeleteAsync(TraceId traceId, DTOKeyType key, CancellationToken ct)
+        public async Task<bool> OptimisticDeleteAsync(TraceId traceId, DTOType keyContainer, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            traceId.Refresh();
+            using (LogContext.PushProperty("TraceId", traceId))
+            {
+                try
+                {
+                    
+                    // pack the data into the event
+                    await _publisher.PublishAsync(new BaseEvent<DataModifiedPayload<DTOType>>(
+                        correlationId: traceId.ToString(),
+                        payload: new DataModifiedPayload<DTOType>
+                        {
+                            Type= ModificationEventType.Delete,
+                            Data=keyContainer
+                        }), ct
+                     );
+                }
+                catch (Exception ex)
+                {
+                    _loggers[LoggerType.ModuleLog].Error("DeleteApi: Action trigger exception {Exception}", ex.Message);
+                    return false;
+                }
+            }
+            return true;
         }
 
-        public Task<bool> OptimisticUpsertAsync(TraceId traceId, DTOType data, CancellationToken ct)
+        public async Task<bool> OptimisticUpsertAsync(TraceId traceId, DTOType data, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            traceId.Refresh();
+            using (LogContext.PushProperty("TraceId", traceId))
+            {
+                try
+                {
+                    // pack the data into the event
+                    await _publisher.PublishAsync(new BaseEvent<DataModifiedPayload<DTOType>>(
+                        correlationId: traceId.ToString(),
+                        payload: new DataModifiedPayload<DTOType>
+                        {
+                            Type = ModificationEventType.Upsert,
+                            Data = data
+                        }), ct
+                     );
+                }
+                catch (Exception ex)
+                {
+                    _loggers[LoggerType.ModuleLog].Error("UpsertApi: Action trigger exception {Exception}", ex.Message);
+                    return false;
+                }
+            }
+            return true;
         }
 
 

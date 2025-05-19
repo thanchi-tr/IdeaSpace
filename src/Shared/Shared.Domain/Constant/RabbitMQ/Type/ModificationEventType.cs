@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.Messaging.Constanst.Event
+namespace Shared.Domain.Constant.RabbitMQ.Type
 {
-    internal class CacheMiss
+    public enum ModificationEventType
     {
+        Upsert = 0,
+        Delete = 1,
     }
 }

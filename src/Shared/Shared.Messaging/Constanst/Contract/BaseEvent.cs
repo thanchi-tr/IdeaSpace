@@ -1,27 +1,43 @@
-﻿
+﻿using Shared.Kernel.Util.Intergrity;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shared.Messaging.Constanst.Contract
 {
-    public class BaseEvent<EventType, EventChangeType>
+    /// <summary>
+    /// Where extra 
+    /// </summary>
+    /// <typeparam name="PayloadType"></typeparam>
+    public class BaseEvent<PayloadType>
     {
+        // expect only payload can be change
+        public required PayloadType Payload { get; set; }
+       
+        /// <summary>
+        /// Check sum should bot be access externally
+        /// </summary>
+        private string Checksum { get; init; }
+        public required DateTime Timestamp { get; init; }
         public required Guid EventId { get; init; } = Guid.NewGuid();
-        public required string CorrelationId { get; set; }
-        public required EventChangeType ChangeType { get; set; }
-
-        public required EventType Payload { get; set; }
-        public required DateTime Timestamp { get; set; }
-        public required string Checksum { get; set; }
+        public required string CorrelationId { get; init; }
 
         [SetsRequiredMembers]
-        public BaseEvent(string correlationId, EventType payload, EventChangeType changeType, string checksum)
+        public BaseEvent(string correlationId, PayloadType payload)
         {
             EventId = Guid.NewGuid();
             CorrelationId = correlationId;
             Payload = payload;
             Timestamp = DateTime.UtcNow;
-            Checksum = checksum;
-            ChangeType = changeType;
+            Checksum = payload.ComputeChecksum(); // internal generate once
+        }
+
+
+        /// <summary>
+        /// Hook for intergrity check
+        /// </summary>
+        /// <returns></returns>
+        public bool Validate()
+        {
+            return String.Compare(Payload.ComputeChecksum(), this.Checksum, StringComparison.Ordinal) == 0;
         }
     }
 }

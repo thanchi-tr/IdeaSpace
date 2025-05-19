@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using Serilog.Context;
+using Shared.Domain.Constanst.RabbitMQ.Event;
 using Shared.Domain.Constant.RabbitMQ.Type;
 using Shared.Infrastructure.Data;
 using Shared.Infrastructure.Observability;
@@ -9,6 +10,7 @@ using Shared.Kernel.Observability.Logging;
 using Shared.Kernel.Observability.Logging.Constant;
 using Shared.Kernel.Util.Intergrity;
 using Shared.Messaging.Constanst.Contract;
+using Shared.Messaging.Constanst.Event;
 using Shared.Messaging.Interface.Publisher;
 using System.Text.Json;
 
@@ -23,17 +25,16 @@ namespace Crud.Application.Interface.System
         private ReadOnlyAppSqlDbContext _readonlyDb {  get; set; }
 
         private Dictionary<LoggerType,Serilog.ILogger> _logger;
-        private RabbitMqMessagePublisher<BaseEvent<ORMType, CacheEventType>> _publisher;
+        private IMessagePublisher<BaseEvent<CacheEventPayload<ORMType>>> _publisher;
         public Reader(
             RedisReader<KeyDTO, ORMType> cache, 
             ReadOnlyAppSqlDbContext readonlyDb,
-            IMessagePublisher<BaseEvent<ORMType, CacheEventType>> messagePublisher,
+            IMessagePublisher<BaseEvent<CacheEventPayload<ORMType>>> messagePublisher,
             ILogger logger)
         {
             _cache = cache;
             _readonlyDb = readonlyDb;
-            _publisher = (RabbitMqMessagePublisher<BaseEvent<ORMType, CacheEventType>>?)
-                messagePublisher!;
+            _publisher = messagePublisher!;
             _logger = logger.Split();
 
         }
@@ -63,12 +64,14 @@ namespace Crud.Application.Interface.System
                         serialisedVal = JsonSerializer.Serialize(target, JsonSerializerStableOptions.Object);
                         // publish cache miss event
                         // this will publish into cache.operate.lazy.queue 
-                        await _publisher.PublishAsync(new BaseEvent<ORMType, CacheEventType>(
+                        await _publisher.PublishAsync(new BaseEvent<CacheEventPayload<ORMType>>(
                             correlationId: traceId.ToString(),
-                            payload: target!,
-                            changeType: CacheEventType.CacheHit,
-                            checksum: serialisedVal.ComputeChecksum()
-                        ));
+                            payload: new CacheEventPayload<ORMType>
+                            {
+                                Type = CacheEventType.CacheHit,
+                                Data = target
+                            }
+                        ), ct);
                         
                         return target;
                     }
@@ -77,12 +80,14 @@ namespace Crud.Application.Interface.System
 
                     serialisedVal = JsonSerializer.Serialize(target, JsonSerializerStableOptions.Object);
                     // this will publish into cache.operate.lazy.queue 
-                    await _publisher.PublishAsync(new BaseEvent<ORMType, CacheEventType>(
+                    await _publisher.PublishAsync(new BaseEvent<CacheEventPayload<ORMType>>(
                         correlationId: traceId.ToString(),
-                        payload: target!,
-                        changeType:CacheEventType.CacheMiss,
-                        checksum: serialisedVal.ComputeChecksum()
-                    ));
+                        payload:  new CacheEventPayload<ORMType>
+                        {
+                            Type = CacheEventType.CacheMiss,
+                            Data = target! //if it is null, it's will diviate to exception handling path
+                        }
+                    ),ct);
                     return target;
                 }
                 catch (Exception ex) // ensure system does not crash on fail to handle low level, push it to dynamic log instead

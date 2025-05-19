@@ -39,7 +39,7 @@ namespace Crud.Application.Interface.Repository
         /// <remarks>
         /// See Shared.Infrastructure.Observability.TraceId for how trace context is composed.
         /// </remarks>
-        Task<bool> OptimisticDeleteAsync(TraceId traceId, DTOKeyType key, CancellationToken ct);
+        Task<bool> OptimisticDeleteAsync(TraceId traceId, DTOType keyContainer, CancellationToken ct);
 
         /// <summary>
         /// Generic get all

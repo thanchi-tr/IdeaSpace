@@ -8,6 +8,6 @@ namespace Shared.Messaging.Interface.Publisher
 {
     public interface IMessagePublisher<T>
     {
-        Task PublishAsync(T message);
+        Task PublishAsync(T message, CancellationToken ct);
     }
 }

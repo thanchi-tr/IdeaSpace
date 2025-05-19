@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Crud.Application.Util;
 using FluentValidation;
-using System.Text.RegularExpressions;
 namespace Crud.Application.Data.DTO
 {
     public class CollectionCreationResftfulDTO

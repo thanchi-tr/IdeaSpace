@@ -14,7 +14,7 @@ namespace Shared.Messaging.Interface.Publisher
             _factory = factory;
         }
 
-        public async Task PublishAsync(T message)
+        public async Task PublishAsync(T message, CancellationToken ct=default)
         {
             using var connection = await _factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
@@ -26,7 +26,8 @@ namespace Shared.Messaging.Interface.Publisher
             await channel.BasicPublishAsync(
                 exchange: "idea.exchange",
                 routingKey: "",
-                body: body);
+                body: body,
+                ct);
 
 
         }
