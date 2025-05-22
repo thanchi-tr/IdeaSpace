@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Crud.Domain\Crud.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repository\" />
-  </ItemGroup>
-
 </Project>

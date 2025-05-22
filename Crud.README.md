@@ -85,6 +85,36 @@ public interface IRedisSerialise
 }
 
 ```
+Ensures:
+
+- All CRUD operations can map to Redis keys
+
+- All Redis writes are key-safe, collision-free
+
+- Easy to plug into IRedisWriter, IRepository, and Reader generics
+
+## Resilience Features
+| Feature                     | Where it’s Enabled                         | Description                                             |
+| --------------------------- | ------------------------------------------ | ------------------------------------------------------- |
+| **TraceId propagation**     | Across all methods in Reader + Repo        | Pushes to logs + events using `LogContext.PushProperty` |
+| **Fallback reads**          | Reader falls back to SQL on cache miss     | Does not crash, logs degraded path                      |
+| **Event publishing safety** | Wrapped in `try/catch`, logs on fail       | Event pub failure is non-fatal (graceful fallback)      |
+| **Typed logging**           | Via `LoggerType.ModuleLog` and `SystemLog` | Ensures logs are filtered and scoped by service         |
+| **Immutable events**        | `BaseEvent<T>` seals checksum + payload    | `.Validate()` hook enforces message trust in consumers  |
+
+### Common Access Patterns
+```
+// Upsert
+await repository.OptimisticUpsertAsync(traceId, dto, cancellationToken);
+
+//Delete
+await repository.OptimisticDeleteAsync(traceId, dto, cancellationToken);
+
+//Get by id
+await repository.OptimisticDeleteAsync(traceId, dto, cancellationToken);
+
+
+```
 ## Message Topology
 
 - Exchange: `sys.operate.lazy` - asynchronous event pool where eventually request will be parse and result send but no contract on when it is complete
